@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "luares.h"
+#include "lupi.h"
 
 int main (void) {
     puts("LuPI 2\n");
-    puts(lua_init);
+    run_init();
     return 0;
 }

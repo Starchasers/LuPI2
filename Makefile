@@ -1,46 +1,53 @@
 CC=gcc
-CFLAGS=-g -Isrc/lib/lua -Iinclude
-SRCDIR=src/c
+CFLAGS=-g -std=c99 -Isrc/lib/lua -Iinclude
+
+BUILD = bin/
+SOURCE = src/c/
+
 CORELUA = src/lua/core
-LIBS=-llua
+LIBS=-lm
 
 GENERATED=include/luares.h src/c/gen/luares.c
 LUAPARAMS = $(CORELUA) include/luares.h src/c/gen/luares.c lua_
-LFLAGS=$(LIBS)
-OBJ=\
-$(SRCDIR)/main.o \
-$(SRCDIR)/gen/luares.o
+LDFLAGS=-static
 
+SRCDIRECTORIES = $(shell find $(SOURCE) -type d)
 BUILDDIRECTORIES = $(patsubst $(SOURCE)%, $(BUILD)%, $(SRCDIRECTORIES))
+
+CFILES = $(shell find $(SOURCE) -type f -name '*.c')
+OBJECTS :=	$(patsubst $(SOURCE)%.c, $(BUILD)%.c.o, $(CFILES))
+
 #Rules
+#Prepare
+$(BUILDDIRECTORIES):
+	mkdir $@
+
+#Clean
+
 #Build
-all: smallclean $(BUILDDIRECTORIES) luaresources lupi
+all: smallclean $(BUILDDIRECTORIES) luaresources $(BUILD)lupi
 
 smallclean:
 	find . -name '*~' -type f -exec rm {} \;
 
 build: clean all
 
-lupi: $(OBJ)
-	$(CC) $(LFLAGS) $^ -o $@
+$(BUILD)lupi: $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
-$(OBJ): %.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+$(BUILD)%.c.o: $(SOURCE)%.c $(BUILD)
+	$(CC) -c $(CFLAGS) -I src/c -I src/c/lib/lua $< -o $@
 
 #Resources
 luaresources: cleanresourcues
 	scripts/txt2c $(LUAPARAMS)
 
-$(BUILDDIRECTORIES):
-	mkdir $@
-
 #Clean rules
 cleanresourcues:
 	-rm -f $(GENERATED)
-
 	mkdir -p src/c/gen/
 	touch src/c/gen/luares.c
 	touch include/luares.h
 
-clean : cleanresourcues
-	-rm -f $(OBJ)
+clean: cleanresourcues
+	-rm -rf $(BUILD)

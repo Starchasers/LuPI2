@@ -2,7 +2,7 @@
 #include "lupi.h"
 
 int main (void) {
-    puts("LuPI 2\n");
+    puts("LuPI L0 INIT");
     run_init();
     return 0;
 }

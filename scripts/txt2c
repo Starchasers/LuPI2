@@ -4,12 +4,38 @@
 # $3 file to generate OUTPUTH H
 # $4 prefix
 
-LUAFILES="$1/*"
+generate() {
+	LUAFILES="$1/*"
+	OUTPUTH="$2"
+	OUTPUTC="$3"
+	PREFIX="$4"
+
+	outname="$(basename "$OUTPUTH")"
+	outname="${outname%.*}"
+	guard=$(echo "$outname" | tr '[:lower:]' '[:upper:]')
+	guard="$guard""_H"
+
+	
+
+	for file in $LUAFILES
+	do
+		filename="$(basename "$file")"
+        if [ -d "$file" ]
+		then
+			generate $file $2 $3 ${PREFIX}${filename}_
+		else
+			filename="${filename%.*}"
+			echo "extern char $PREFIX$filename[];"    >> "$OUTPUTH"
+
+
+			echo "char $PREFIX$filename[] = {"        >> "$OUTPUTC"
+			echo "    " $(xxd -i < "$file") ",0x00"   >> "$OUTPUTC"
+			echo "};"                                 >> "$OUTPUTC"
+		fi
+	done
+}
+
 OUTPUTH="$2"
-OUTPUTC="$3"
-PREFIX="$4"
-
-
 
 outname="$(basename "$OUTPUTH")"
 outname="${outname%.*}"
@@ -19,22 +45,8 @@ guard="$guard""_H"
 printf "#ifndef %s\n" "$guard"            >> "$OUTPUTH"
 printf "#define %s\n" "$guard"            >> "$OUTPUTH"
 
-for file in $LUAFILES
-do
-
-filename="$(basename "$file")"
-filename="${filename%.*}"
-
-echo "extern char $PREFIX$filename[];"    >> "$OUTPUTH"
-
-
-echo "char $PREFIX$filename[] = {"        >> "$OUTPUTC"
-echo "    " $(xxd -i < "$file") ",0x00"   >> "$OUTPUTC"
-echo "};"                                 >> "$OUTPUTC"
-
-done
+generate "$1" "$2" "$3" "$4"
 
 echo "#endif"                             >> "$OUTPUTH"
-
 exit 0
 

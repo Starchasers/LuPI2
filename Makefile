@@ -20,7 +20,7 @@ OBJECTS :=	$(patsubst $(SOURCE)%.c, $(BUILD)%.c.o, $(CFILES))
 #Rules
 #Prepare
 $(BUILDDIRECTORIES):
-	mkdir $@
+	mkdir -p $@
 
 #Clean
 

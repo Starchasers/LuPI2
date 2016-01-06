@@ -8,9 +8,10 @@
 void run_init() {
   lua_State *L;
   L = luaL_newstate();
-  
+
   luaL_openlibs   (L);
   setup_modules   (L);
+  luanative_start (L);
   termutils_start (L);
 
   int status = luaL_loadstring(L, lua_init);

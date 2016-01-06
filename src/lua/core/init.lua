@@ -35,15 +35,19 @@ local function loadModule(name)
 end
 
 --Load modules
+--Utils
 loadModule("random")
 loadModule("color")
 
+--Core
 loadModule("component")
 loadModule("computer")
 
+--Components
 loadModule("eeprom")
 loadModule("textgpu")
 
+--Userspace
 loadModule("sandbox")
 loadModule("boot")
 

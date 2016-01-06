@@ -17,11 +17,16 @@ function boot.boot()
     error("No bootcode")
   end
     ---PASS SANDBOX!!!!!!
-  local f, reason = load(code, "=BIOS")
+  local f, reason = load(code, "=BIOS", nil, modules.sandbox)
   if not f then
     print(reason)
   else
-    f()
+    local e, reason = pcall(f)
+    if not e then
+      print("ERROR")
+      print(reason)
+      --TODO: Make fancy bsod here
+    end
     print("System quit, Panic")
   end
 end

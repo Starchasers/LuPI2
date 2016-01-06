@@ -1,4 +1,4 @@
-local function checkArg(n, have, ...)
+function checkArg(n, have, ...)
   have = type(have)
   local function check(want, ...)
     if not want then
@@ -36,8 +36,13 @@ end
 
 --Load modules
 loadModule("random")
+loadModule("color")
+
 loadModule("component")
 loadModule("computer")
+
+loadModule("textgpu")
+
 loadModule("sandbox")
 loadModule("boot")
 
@@ -45,4 +50,5 @@ loadModule("boot")
 modules.component.prepare()
 modules.computer.prepare()
 
+modules.textgpu.start()
 modules.boot.boot()

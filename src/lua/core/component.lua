@@ -18,7 +18,7 @@ function api.register(address, ctype, proxy, doc)
   checkArg(2, ctype, "string")
   checkArg(3, proxy, "table")
   if type(address) ~= "string" then
-    address = random.uuid()
+    address = modules.random.uuid()
   end
   if components[address] ~= nil then
     return nil, "component already at address"
@@ -28,12 +28,13 @@ function api.register(address, ctype, proxy, doc)
   components[address].proxy = {}
   for k,v in pairs(proxy) do
     if type(v) == "function" then
-      components[address].proxy = setmetatable({name=k,address=address}, componentCallback)
+      print("Cfunc " .. k)
+      components[address].proxy[k] = setmetatable({name=k,address=address}, componentCallback)
     else
-      components[address].proxy = v
+      components[address].proxy[k] = v
     end
   end
-  computer.pushSignal("component_added", address, ctype)
+  modules.computer.api.pushSignal("component_added", address, ctype)
   return true
 end
 
@@ -44,7 +45,7 @@ function api.unregister(address)
   end
   local ctype = components[address].type
   components[address] = nil
-  computer.pushSignal("component_removed", address, ctype)
+  modules.computer.api.pushSignal("component_removed", address, ctype)
   return true
 end
 

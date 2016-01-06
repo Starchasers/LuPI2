@@ -5,5 +5,7 @@ extern char lua_component[];
 extern char lua_computer[];
 extern char lua_init[];
 extern char lua_sandbox[];
+extern char lua_textgpu[];
+extern char lua_util_color[];
 extern char lua_util_random[];
 #endif

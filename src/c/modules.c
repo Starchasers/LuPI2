@@ -11,6 +11,8 @@ void setup_modules(lua_State *L) {
   pushstuple(L, "boot", lua_boot);
   pushstuple(L, "component", lua_component);
   pushstuple(L, "computer", lua_computer);
+  pushstuple(L, "eeprom", lua_eeprom);
+  pushstuple(L, "eepromDefault", lua_eepromDefault);
   pushstuple(L, "sandbox", lua_sandbox);
   pushstuple(L, "textgpu", lua_textgpu);
   pushstuple(L, "color", lua_util_color);

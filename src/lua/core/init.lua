@@ -41,6 +41,7 @@ loadModule("color")
 loadModule("component")
 loadModule("computer")
 
+loadModule("eeprom")
 loadModule("textgpu")
 
 loadModule("sandbox")
@@ -50,5 +51,7 @@ loadModule("boot")
 modules.component.prepare()
 modules.computer.prepare()
 
+modules.eeprom.register()
 modules.textgpu.start()
+
 modules.boot.boot()

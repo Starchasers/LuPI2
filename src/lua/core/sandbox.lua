@@ -125,6 +125,10 @@ sandbox = {
       return os.time(table)
     end,
     tmpname = nil,
+    sleep = function(time)
+      checkArg(1, time, "number")
+      native.sleep(time * 1000000)
+    end
   },
   debug = { --TODO: Consider expanding
     getinfo = function(...)

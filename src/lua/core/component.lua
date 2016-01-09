@@ -35,7 +35,7 @@ function api.register(address, ctype, proxy, doc)
     end
   end
   modules.computer.api.pushSignal("component_added", address, ctype)
-  return true
+  return address
 end
 
 function api.unregister(address)
@@ -65,7 +65,7 @@ function api.invoke(address, method, ...)
     error("No such component")
   end
   if not components[address].rawproxy[method] then
-    error("No such method")
+    error("No such method: " .. tostring(components[address].type) .. "." .. tostring(method))
   end
   return components[address].rawproxy[method](...)
 end

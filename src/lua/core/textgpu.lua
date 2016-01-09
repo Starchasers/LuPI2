@@ -25,7 +25,8 @@ function textgpu.start()
       return --TODO: Maybe?
     end
     background = modules.color.nearest(color, mapping)
-    io.write("\x1b[4" .. background .. "m")
+    io.write("\x1b[4" .. math.floor(background) .. "m")
+    io.flush()
   end
   function gpu.setForeground(color, isPaletteIndex)
     checkArg(1, color, "number")
@@ -33,8 +34,9 @@ function textgpu.start()
     if isPaletteIndex then
       return --TODO: Maybe?
     end
-    background = modules.color.nearest(color, mapping)
-    io.write("\x1b[3" .. background .. "m")
+    foreground = modules.color.nearest(color, mapping)
+    io.write("\x1b[3" .. math.floor(foreground) .. "m")
+    io.flush()
   end
   function gpu.getBackground()
     return mapping[background], false
@@ -79,6 +81,8 @@ function textgpu.start()
     checkArg(2, y, "number")
     checkArg(3, value, "string")
     checkArg(4, vertical, "boolean", "nil")
+    x = math.floor(x)
+    y = math.floor(y)
     if not vertical then
       io.write("\x1b[" .. y .. ";" .. x .. "H" .. value)
     else
@@ -87,6 +91,7 @@ function textgpu.start()
         io.write(c .. "\x1b[D\x1b[B")
       end)
     end
+    io.flush()
     return true
   end
   function gpu.copy(x, y, w, h, tx, ty)
@@ -112,10 +117,15 @@ function textgpu.start()
     return true
   end
 
+  io.write("\x1b[?25l") --Disable cursor
   gpu.setForeground(0xFFFFFF)
   gpu.setBackground(0x000000)
 
   modules.component.api.register(nil, "gpu", gpu)
+
+  deadhooks[#deadhooks + 1] = function()
+    io.write("\x1b[?25h") --Enable cursor on quit
+  end
 end
 
 return textgpu

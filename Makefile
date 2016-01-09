@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -std=c99 -Isrc/lib/lua -Iinclude
+CFLAGS=-g -std=gnu99 -Isrc/lib/lua -Iinclude
 
 BUILD = bin/
 SOURCE = src/c/

@@ -18,6 +18,7 @@ end
 
 print("LuPI L1 INIT")
 modules = {}
+deadhooks = {}
 
 local function loadModule(name)
   print("LuPI L1 INIT > Load module > " .. name)
@@ -26,7 +27,7 @@ local function loadModule(name)
   if not moduleCode[name] then
     error("No code for module " .. tostring(name))
   end
-  local code, reason = load(moduleCode[name])
+  local code, reason = load(moduleCode[name], "=Module "..name)
   if not code then
     print("Failed loading module " .. name .. ": " .. reason)
   else
@@ -34,28 +35,47 @@ local function loadModule(name)
   end
 end
 
---Load modules
---Utils
-loadModule("random")
-loadModule("color")
+function main()
+  --Load modules
+  --Utils
+  loadModule("random")
+  loadModule("color")
 
---Core
-loadModule("component")
-loadModule("computer")
+  --Core
+  loadModule("component")
+  loadModule("computer")
 
---Components
-loadModule("eeprom")
-loadModule("textgpu")
+  --Components
+  loadModule("eeprom")
+  loadModule("textgpu")
+  loadModule("filesystem")
 
---Userspace
-loadModule("sandbox")
-loadModule("boot")
+  --Userspace
+  loadModule("sandbox")
+  loadModule("boot")
 
---Setup core modules
-modules.component.prepare()
-modules.computer.prepare()
+  --Setup core modules
+  modules.component.prepare()
+  modules.computer.prepare()
 
-modules.eeprom.register()
-modules.textgpu.start()
+  modules.eeprom.register()
+  modules.filesystem.register("root")
+  modules.textgpu.start()
 
-modules.boot.boot()
+  modules.boot.boot()
+end
+
+local state, cause = pcall(main)
+if not state then
+  print("LuPI finished with following error:")
+  print(cause)
+end
+
+print("Running shutdown hooks")
+for k, hook in ipairs(deadhooks) do
+  local state, cause = pcall(hook)
+  if not state then
+    print("Shutdown hook with following error:")
+    print(cause)
+  end
+end

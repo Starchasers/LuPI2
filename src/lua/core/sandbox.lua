@@ -160,7 +160,8 @@ sandbox = {
     len = utf8.len,
     offset = utf8.offset
   },
-  checkArg = checkArg
+  checkArg = checkArg,
+  og = _G
 }
 
 sandbox._G = sandbox

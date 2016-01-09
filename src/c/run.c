@@ -5,6 +5,15 @@
 #include <lauxlib.h>
 #include <stdlib.h>
 
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdlib.h>
+
 void run_init() {
   lua_State *L;
   L = luaL_newstate();
@@ -14,7 +23,8 @@ void run_init() {
   luanative_start (L);
   termutils_start (L);
 
-  int status = luaL_loadstring(L, lua_init);
+  //int status = luaL_loadstring(L, lua_init);
+  int status = luaL_loadbuffer(L, lua_init, strlen(lua_init), "=INIT");
   if (status) {
     fprintf(stderr, "Couldn't load init: %s\n", lua_tostring(L, -1));
     exit(1);

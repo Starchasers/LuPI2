@@ -16,6 +16,49 @@
 #include <limits.h>
 #include <linux/kd.h>
 
+void logn (const char *message) {
+  FILE *file;
+
+  file = fopen("lupi.log", "a");
+    
+  if (file == NULL) {
+    return;
+  } else {
+    fputs(message, file);
+    fputs("\n", file);
+    fclose(file);
+  }
+}
+
+void logi (int message) {
+  FILE *file;
+
+  file = fopen("lupi.log", "a");
+    
+  if (file == NULL) {
+    return;
+  } else {
+    char str[15]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    sprintf(str, "%d", message);
+    fputs(str, file);
+    fclose(file);
+  }
+}
+
+void logm (const char *message) {
+  FILE *file;
+
+  file = fopen("lupi.log", "a");
+    
+  if (file == NULL) {
+    return;
+  } else {
+    fputs(message, file);
+    fclose(file);
+  }
+}
+
+
 static int l_sleep (lua_State *L) {
   unsigned int t = lua_tonumber(L, 1);
   usleep(t);
@@ -73,14 +116,20 @@ static int l_fs_spaceUsed (lua_State *L) {
 static int l_fs_open (lua_State *L) {
   const char* fname = lua_tostring(L, 1);
   const char* mode = lua_tostring(L, 2);
+  logm("Open file: ");
+  logn(fname);
   int m = 0;
   if(mode[0] == 'r') m = O_RDONLY;
   else if(mode[0] == 'w') m = O_WRONLY | O_CREAT /*| O_DIRECT*/;
   else if(mode[0] == 'a') m = O_WRONLY | O_APPEND | O_CREAT /*| O_DIRECT*/;
   else return 0;
   int fd = open(fname, m, 644);
-  if(fd == -1) return 0;
 
+  if(fd == -1) return 0;
+  logm("FD ");
+  logi(fd);
+  logm(" for ");
+  logn(fname);
   lua_pushnumber(L, fd);
   return 1;
 }
@@ -145,8 +194,10 @@ static int l_fs_list (lua_State *L) {
     lua_newtable(L);
     int n = 1;
     while ((ent = readdir(dir)) != NULL) { //TODO: Check if it should be freed
-      lua_pushstring(L, ent->d_name);
-      lua_rawseti(L, -2, n++);
+      if(strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0) {
+        lua_pushstring(L, ent->d_name);
+        lua_rawseti(L, -2, n++);
+      }
     }
     closedir(dir);
   } else {
@@ -213,11 +264,18 @@ static int l_fs_size (lua_State *L) {
 }
 
 static int l_fs_read (lua_State *L) {
-  int fd = lua_tonumber(L, 1);
-  int count = lua_tonumber(L, 2);
+  unsigned int fd = lua_tonumber(L, 1);
+  unsigned int count = lua_tonumber(L, 2);
   void* buf = malloc(count);
   size_t res = read(fd, buf, count);
-  if(res != -1) {
+  logm("read(");
+  logi(fd);
+  logm(") bytes:");
+  logi(res);
+  logm(" of ");
+  logi(count);
+  logn("");
+  if(res > 0) {
     lua_pushlstring(L, buf, res);
     free(buf);
     return 1;
@@ -267,6 +325,7 @@ void luanative_start(lua_State *L) {
   pushctuple(L, "fs_write", l_fs_write);
   pushctuple(L, "fs_spaceTotal", l_fs_spaceTotal);
   pushctuple(L, "fs_rename", l_fs_rename);
+  pushctuple(L, "fs_list", l_fs_list);
   pushctuple(L, "fs_lastModified", l_fs_lastModified);
   pushctuple(L, "fs_remove", l_fs_remove);
   pushctuple(L, "fs_close", l_fs_close);

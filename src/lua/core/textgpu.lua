@@ -110,7 +110,7 @@ function textgpu.start()
     checkArg(3, w, "number")
     checkArg(4, h, "number")
     checkArg(5, ch, "string")
-    ch = ch:sub(1, 1):rep(w)
+    ch = ch:sub(1, 1):rep(math.floor(w))
     for i=1, h do
       gpu.set(x, y + i - 1, ch)
     end
@@ -122,6 +122,7 @@ function textgpu.start()
   gpu.setBackground(0x000000)
 
   modules.component.api.register(nil, "gpu", gpu)
+  modules.component.api.register(nil, "screen", {getKeyboards = function() return {} end}) --verry dummy screen, TODO: make it better
 
   deadhooks[#deadhooks + 1] = function()
     io.write("\x1b[?25h") --Enable cursor on quit

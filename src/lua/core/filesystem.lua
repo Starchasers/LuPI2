@@ -144,6 +144,9 @@ function filesystem.register(basePath)
     return native.fs_size(realpath(path))
   end
   function fs.read(handle, count) --FIXME: Hudgeread, fix in general
+    if count == math.huge then
+      count = 4294967295
+    end
     checkArg(1, handle, "number")
     checkArg(2, count, "number")
     return native.fs_read(handle, count)

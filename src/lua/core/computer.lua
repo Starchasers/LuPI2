@@ -18,7 +18,7 @@ function api.pullSignal(timeout)
 end
 
 function api.uptime()
-  return native.uptime()
+  return native.uptime() / 1000
 end
 
 function api.beep(freq, time)

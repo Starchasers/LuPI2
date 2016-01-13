@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
+#include <sys/time.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -311,6 +312,13 @@ static int l_beep (lua_State *L) {
   return 0;
 }
 
+static int l_uptime (lua_State *L) { //Return ms
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  lua_pushnumber(L, tp.tv_sec * 1000 + tp.tv_usec / 1000);
+  return 1;
+}
+
 void luanative_start(lua_State *L) {
   lua_createtable (L, 0, 1);
   
@@ -333,6 +341,7 @@ void luanative_start(lua_State *L) {
   pushctuple(L, "fs_read", l_fs_read);
 
   pushctuple(L, "beep", l_beep);
+  pushctuple(L, "uptime", l_uptime);
 
   lua_setglobal(L, "native");
 }

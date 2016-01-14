@@ -164,11 +164,11 @@ sandbox = {
     char = utf8.char,
     charWidth = function(c)
       checkArg(1, c, "string")
-      return modules.utf8.utf8charbytes(c)
+      return modules.utf8.charbytes(c)
     end,
     isWide = function(c)
       checkArg(1, c, "string")
-      return modules.utf8.utf8charbytes(c) > 1
+      return modules.utf8.charbytes(c) > 1
     end,
     len = utf8.len,
     lower = modules.utf8.lower,

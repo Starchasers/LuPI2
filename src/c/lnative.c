@@ -4,6 +4,7 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
@@ -17,9 +18,9 @@
 #include <limits.h>
 #include <linux/kd.h>
 
-
+//Enable in lupi.h
 #ifdef LOGGING
-void logn (const char *message) {
+void logn(const char *message) {
   FILE *file;
 
   file = fopen("lupi.log", "a");
@@ -33,7 +34,7 @@ void logn (const char *message) {
   }
 }
 
-void logi (int message) {
+void logi(int message) {
   FILE *file;
 
   file = fopen("lupi.log", "a");
@@ -48,7 +49,7 @@ void logi (int message) {
   }
 }
 
-void logm (const char *message) {
+void logm(const char *message) {
   FILE *file;
 
   file = fopen("lupi.log", "a");
@@ -273,6 +274,11 @@ static int l_fs_size (lua_State *L) {
 static int l_fs_read (lua_State *L) {
   unsigned int fd = lua_tonumber(L, 1);
   unsigned int count = lua_tonumber(L, 2);
+  size_t cur = lseek(fd, 0, SEEK_CUR);
+  size_t end = lseek(fd, 0, SEEK_END);
+  lseek(fd, cur, SEEK_SET);
+  if(count > end - cur)
+    count = end - cur;
   void* buf = malloc(count);
   size_t res = read(fd, buf, count);
   logm("read(");
@@ -282,6 +288,7 @@ static int l_fs_read (lua_State *L) {
   logm(" of ");
   logi(count);
   logn("");
+
   if(res > 0) {
     lua_pushlstring(L, buf, res);
     free(buf);
@@ -339,6 +346,10 @@ static int l_freeMemory (lua_State *L) {
   return 1;
 }
 
+static int l_pull (lua_State *L) {
+  lua_pushnumber(L, epoll_pull(lua_tonumber(L, 1)));
+  return 1;
+}
 
 void luanative_start(lua_State *L) {
   lua_createtable (L, 0, 1);
@@ -365,6 +376,7 @@ void luanative_start(lua_State *L) {
   pushctuple(L, "uptime", l_uptime);
   pushctuple(L, "totalMemory", l_totalMemory);
   pushctuple(L, "freeMemory", l_freeMemory);
+  pushctuple(L, "pull", l_pull);
 
   lua_setglobal(L, "native");
 }

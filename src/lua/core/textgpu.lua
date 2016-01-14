@@ -51,9 +51,11 @@ function textgpu.start()
     if isPaletteIndex then
       return --TODO: Maybe?
     end
+    local old = foreground
     background = tostring(math.floor(modules.color.nearest(color, mapping)))
     io.write("\x1b[4" .. background .. "m")
     io.flush()
+    return mapping[old]
   end
   function gpu.setForeground(color, isPaletteIndex)
     checkArg(1, color, "number")
@@ -61,9 +63,11 @@ function textgpu.start()
     if isPaletteIndex then
       return --TODO: Maybe?
     end
+    local old = foreground
     foreground = tostring(math.floor(modules.color.nearest(color, mapping)))
     io.write("\x1b[3" .. foreground .. "m")
     io.flush()
+    return mapping[old]
   end
   function gpu.getBackground()
     return mapping[background], false
@@ -91,6 +95,14 @@ function textgpu.start()
   end
   function gpu.getResolution()
     return termutils.getSize()
+  end
+  function gpu.getViewport()
+    return termutils.getSize()
+  end
+  function gpu.setViewport(w, h)
+    checkArg(1, w, "number")
+    checkArg(2, h, "number")
+    return false, "Viewport not supported for this gpu"
   end
   function gpu.setResolution(w, h)
     checkArg(1, w, "number")

@@ -137,7 +137,7 @@ function filesystem.register(basePath)
   end
   function fs.close(handle)
     checkArg(1, handle, "number")
-    return native.fs_close()
+    return native.fs_close(handle)
   end
   function fs.size(path)
     checkArg(1, path, "string")

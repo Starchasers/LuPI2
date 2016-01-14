@@ -64,6 +64,7 @@ function main()
   --Setup core modules
   modules.component.prepare()
   modules.computer.prepare()
+  _G.pushEvent = modules.computer.api.pushSignal
 
   modules.eeprom.register()
   modules.filesystem.register("root")

@@ -325,6 +325,21 @@ static int l_uptime (lua_State *L) { //Return ms
   return 1;
 }
 
+static int l_totalMemory (lua_State *L) {
+  long pages = sysconf(_SC_PHYS_PAGES);
+  long page_size = sysconf(_SC_PAGE_SIZE);
+  lua_pushnumber(L, pages * page_size);
+  return 1;
+}
+
+static int l_freeMemory (lua_State *L) {
+  long pages = sysconf(_SC_AVPHYS_PAGES);
+  long page_size = sysconf(_SC_PAGE_SIZE);
+  lua_pushnumber(L, pages * page_size);
+  return 1;
+}
+
+
 void luanative_start(lua_State *L) {
   lua_createtable (L, 0, 1);
   
@@ -348,6 +363,8 @@ void luanative_start(lua_State *L) {
 
   pushctuple(L, "beep", l_beep);
   pushctuple(L, "uptime", l_uptime);
+  pushctuple(L, "totalMemory", l_totalMemory);
+  pushctuple(L, "freeMemory", l_freeMemory);
 
   lua_setglobal(L, "native");
 }

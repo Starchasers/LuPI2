@@ -15,6 +15,7 @@ function checkArg(n, have, ...)
 end
 
 -------------------------------------------------------------------------------
+math.randomseed(native.uptime())--TODO: Make it better?
 
 print("LuPI L1 INIT")
 modules = {}
@@ -45,6 +46,8 @@ function main()
   loadModule("utf8data")
   loadModule("utf8")
 
+  modules.address = modules.random.uuid() --TODO: PREALPHA: Make constant
+
   --Core
   loadModule("component")
   loadModule("computer")
@@ -64,6 +67,7 @@ function main()
 
   modules.eeprom.register()
   modules.filesystem.register("root")
+  modules.computer.tmp = modules.filesystem.register("/tmp/" .. modules.random.uuid())
   modules.textgpu.start()
 
   modules.boot.boot()

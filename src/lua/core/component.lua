@@ -122,4 +122,8 @@ function api.proxy(address)
   return components[address].proxy
 end
 
+function api.slot() --legacy
+  return 0
+end
+
 return component

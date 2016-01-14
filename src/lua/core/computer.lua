@@ -2,8 +2,14 @@ local computer = {}
 local api = {}
 computer.api = api
 
+--computer.tmp - set in init.lua
+
 function computer.prepare( ... )
 	
+end
+
+function api.address()
+  return modules.address
 end
 
 local signalQueue = {}
@@ -29,6 +35,19 @@ function api.beep(freq, time)
   if not freq then freq = 1000 end
   if not time then time = 0.2 end
   native.beep(freq, time * 1000)
+end
+
+function api.tmpAddress()
+  return computer.tmp
+end
+
+
+function api.freeMemory()
+  return native.freeMemory()
+end
+
+function api.totalMemory()
+  return native.totalMemory()
 end
 
 return computer

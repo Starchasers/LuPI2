@@ -17,6 +17,8 @@
 #include <limits.h>
 #include <linux/kd.h>
 
+
+#ifdef LOGGING
 void logn (const char *message) {
   FILE *file;
 
@@ -58,7 +60,11 @@ void logm (const char *message) {
     fclose(file);
   }
 }
-
+#else
+#define logn(m)
+#define logi(m)
+#define logm(m)
+#endif
 
 static int l_sleep (lua_State *L) {
   unsigned int t = lua_tonumber(L, 1);

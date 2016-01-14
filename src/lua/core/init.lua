@@ -22,6 +22,7 @@ deadhooks = {}
 
 local function loadModule(name)
   print("LuPI L1 INIT > Load module > " .. name)
+  io.flush()
   --TODO: PRERELEASE: Module sandboxing, preferably secure-ish
   --TODO: ASAP: Handle load errors
   if not moduleCode[name] then
@@ -30,6 +31,7 @@ local function loadModule(name)
   local code, reason = load(moduleCode[name], "=Module "..name)
   if not code then
     print("Failed loading module " .. name .. ": " .. reason)
+    io.flush()
   else
     modules[name] = code()
   end
@@ -40,6 +42,8 @@ function main()
   --Utils
   loadModule("random")
   loadModule("color")
+  loadModule("utf8data")
+  loadModule("utf8")
 
   --Core
   loadModule("component")

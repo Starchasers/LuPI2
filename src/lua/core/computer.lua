@@ -6,14 +6,18 @@ function computer.prepare( ... )
 	
 end
 
+local signalQueue = {}
+
 function api.pushSignal(...)
-  --FIXME: ASAP: Implement
+  signalQueue[#signalQueue + 1] = {...}
 end
 
 function api.pullSignal(timeout)
+  if signalQueue[1] then return table.remove(signalQueue, 1) end
   if type(timeout) == "number" then
     native.sleep(timeout * 1000000);
   end
+  if signalQueue[1] then return table.remove(signalQueue, 1) end
   --print(debug.traceback())
 end
 

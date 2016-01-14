@@ -1,4 +1,4 @@
-﻿utf8_lc_uc = {
+﻿local lc_uc = {
 	["a"] = "A",
 	["b"] = "B",
 	["c"] = "C",
@@ -933,7 +933,7 @@
 }
 
 
-utf8_uc_lc = {
+local uc_lc = {
 	["A"] = "a",
 	["B"] = "b",
 	["C"] = "c",
@@ -1858,3 +1858,4 @@ utf8_uc_lc = {
 	["𐐧"] = "𐑏",
 }
 
+return {uc_lc = uc_lc, lc_uc = lc_uc}

@@ -5,14 +5,15 @@
 # $4 prefix
 
 generate() {
-	LUAFILES="$1/*"
-	OUTPUTH="$2"
-	OUTPUTC="$3"
-	PREFIX="$4"
+	local LUAFILES="$1/*"
+	local OUTPUTH="$2"
+	local OUTPUTC="$3"
+	local PREFIX="$4"
 
-	outname="$(basename "$OUTPUTH")"
+	local outname="$(basename "$OUTPUTH")"
 	outname="${outname%.*}"
-	guard=$(echo "$outname" | tr '[:lower:]' '[:upper:]')
+	
+	local guard=$(echo "$outname" | tr '[:lower:]' '[:upper:]')
 	guard="$guard""_H"
 
 	

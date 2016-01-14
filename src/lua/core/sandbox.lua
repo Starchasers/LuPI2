@@ -160,6 +160,24 @@ sandbox = {
     len = utf8.len,
     offset = utf8.offset
   },
+  unicode = {
+    char = utf8.char,
+    charWidth = function(c)
+      checkArg(1, c, "string")
+      return modules.utf8.utf8charbytes(c)
+    end,
+    isWide = function(c)
+      checkArg(1, c, "string")
+      return modules.utf8.utf8charbytes(c) > 1
+    end,
+    len = utf8.len,
+    lower = modules.utf8.lower,
+    reverse = modules.utf8.reverse,
+    sub = modules.utf8.sub,
+    upper = modules.utf8.upper,
+    wlen = utf8.len, --How is it different from len?
+    --wtrunc?
+  },
   checkArg = checkArg,
   og = _G
 }

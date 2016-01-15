@@ -31,10 +31,13 @@ void termutils_start(lua_State *L) {
   struct termios old, new;
   if (tcgetattr (STDOUT_FILENO, &old) != 0)
      return;
-   new = old;
-   new.c_lflag &= ~ECHO;
-   if (tcsetattr (STDOUT_FILENO, TCSAFLUSH, &new) != 0)
-     return;
+  new = old;
+
+  cfmakeraw(&new);
+
+
+  if (tcsetattr (STDOUT_FILENO, TCSAFLUSH, &new) != 0)
+    return;
 
   lua_createtable (L, 0, 1);
   pushctuple(L, "getSize", l_get_term_sz);

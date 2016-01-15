@@ -51,7 +51,7 @@ function textgpu.start()
     if isPaletteIndex then
       return --TODO: Maybe?
     end
-    local old = foreground
+    local old = background
     background = tostring(math.floor(modules.color.nearest(color, mapping)))
     io.write("\x1b[4" .. background .. "m")
     io.flush()
@@ -219,7 +219,7 @@ function textgpu.start()
   gpu.setBackground(0x000000)
 
   modules.component.api.register(nil, "gpu", gpu)
-  modules.component.api.register(nil, "screen", {getKeyboards = function() return {} end}) --verry dummy screen, TODO: make it better
+  modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
 
   deadhooks[#deadhooks + 1] = function()
     io.write("\x1b[?25h") --Enable cursor on quit

@@ -87,22 +87,28 @@ local keymap = {
   [0x60 + 0x1B] = 0x15,
   [0x60 + 0x1C] = 0x2C,
 
-  [13] = 28,
+  [13] = 28, --Return key
+  [127] = 14, --backspace
+  [9] = 15, --Tab
 
+}
+
+local asciitr = {
+  [127] = 8,
 }
 
 function computer.signalTransformers.key_down(s, a, ascii, key, user)
   if key ~= -1 then
     return s, a, ascii, key, user
   end
-  return s, a, ascii, keymap[ascii] or key, user
+  return s, a, asciitr[ascii] or ascii, keymap[ascii] or key, user
 end
 
 function computer.signalTransformers.key_up(s, a, ascii, key, user)
   if key ~= -1 then
     return s, a, ascii, key, user
   end
-  return s, a, ascii, keymap[ascii] or key, user
+  return s, a, asciitr[ascii] or ascii, keymap[ascii] or key, user
 end
 
 -----

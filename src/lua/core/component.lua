@@ -28,7 +28,6 @@ function api.register(address, ctype, proxy, doc)
   components[address].proxy = {}
   for k,v in pairs(proxy) do
     if type(v) == "function" then
-      print("Cfunc " .. k)
       components[address].proxy[k] = setmetatable({name=k,address=address}, componentCallback)
     else
       components[address].proxy[k] = v

@@ -12,12 +12,12 @@ static int handleStdin(int fd, void* data) {
   char buf;
   int r = read(fd, &buf, 1); //TODO: Wide chars?
   if(r > 0) {
-    if(buf == 10) buf = 13;
+    //if(buf == 10) buf = 13;
     lua_State* L = getL();
 
     lua_getglobal(L, "pushEvent");
     lua_pushstring(L, "key_down");
-    lua_pushstring(L, "TODO:SetThisUuid");
+    lua_pushstring(L, "TODO:SetThisUuid");//Also in textgpu.lua
     lua_pushnumber(L, buf);
     lua_pushnumber(L, -1);
     lua_pushstring(L, "user");

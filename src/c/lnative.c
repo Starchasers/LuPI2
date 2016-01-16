@@ -131,7 +131,7 @@ static int l_fs_open (lua_State *L) {
   else if(mode[0] == 'w') m = O_WRONLY | O_CREAT /*| O_DIRECT*/;
   else if(mode[0] == 'a') m = O_WRONLY | O_APPEND | O_CREAT /*| O_DIRECT*/;
   else return 0;
-  int fd = open(fname, m, 644);
+  int fd = open(fname, m, 0644);
 
   if(fd == -1) return 0;
   logm("FD ");

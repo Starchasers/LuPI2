@@ -125,4 +125,8 @@ function api.slot() --legacy
   return 0
 end
 
+function api.type(address)
+  return components[address].type
+end
+
 return component

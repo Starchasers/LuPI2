@@ -159,32 +159,36 @@ function textgpu.start()
       local write = false
       for j=1, w do
         if btbuf[i]:sub(j,j) ~= bg then
-          bg = btbuf[i]:sub(j,j)
-          io.write("\x1b[4" .. bg .. "m")
           write = true
         end
         if ftbuf[i]:sub(j,j) ~= fg then
-          fg = ftbuf[i]:sub(j,j)
-          io.write("\x1b[3" .. fg .. "m")
           write = true
         end
         if not line then linex = j end
-        line = (line or "") .. ttbuf[i]:sub(j,j)
+        line = (line or "")
         if write then
           local wx = (tx + linex)|0
           local wy = (ty + y + i - 1)|0
+          io.write("\x1b[4" .. bg .. "m")
+          io.write("\x1b[3" .. fg .. "m")
           io.write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
           tbuffer[wy] = insertString(tbuffer[wy], line, wx)
           bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
           fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
+          bg = btbuf[i]:sub(j,j)
+          fg = ftbuf[i]:sub(j,j)
           line = nil
           linex = nil
           write = false
         end
+        if not line then linex = j end
+        line = (line or "") .. ttbuf[i]:sub(j,j)
       end
       if line then
         local wx = (tx + linex)|0
         local wy = (ty + y + i - 1)|0
+        io.write("\x1b[4" .. bg .. "m")
+        io.write("\x1b[3" .. fg .. "m")
         io.write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
         tbuffer[wy] = insertString(tbuffer[wy], line, wx)
         bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
@@ -220,6 +224,7 @@ function textgpu.start()
 
   modules.component.api.register(nil, "gpu", gpu)
   modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
+  modules.component.api.register("TODO:SetThisUuid", "keyboard", {})
 
   deadhooks[#deadhooks + 1] = function()
     io.write("\x1b[?25h") --Enable cursor on quit

@@ -114,7 +114,6 @@ end
 -----
 
 function api.pushSignal(s, ...)
-  io.stderr:write("pushSignal "..s.."\n")
   signalQueue[#signalQueue + 1] = {computer.signalTransformers[s](s, ...)}
 end
 

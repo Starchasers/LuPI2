@@ -17,6 +17,8 @@ io.write = function(...)
   io.flush()
   native.sleep(20000)
 end]]--
+local write = io.write
+local flush = io.flush
 
 local background = "0"
 local foreground = "0"
@@ -53,8 +55,8 @@ function textgpu.start()
     end
     local old = background
     background = tostring(math.floor(modules.color.nearest(color, mapping)))
-    io.write("\x1b[4" .. background .. "m")
-    io.flush()
+    write("\x1b[4" .. background .. "m")
+    flush()
     return mapping[old]
   end
   function gpu.setForeground(color, isPaletteIndex)
@@ -65,8 +67,8 @@ function textgpu.start()
     end
     local old = foreground
     foreground = tostring(math.floor(modules.color.nearest(color, mapping)))
-    io.write("\x1b[3" .. foreground .. "m")
-    io.flush()
+    write("\x1b[3" .. foreground .. "m")
+    flush()
     return mapping[old]
   end
   function gpu.getBackground()
@@ -126,14 +128,14 @@ function textgpu.start()
       tbuffer[y] = insertString(tbuffer[y], value, x)
       bbuffer[y] = insertString(bbuffer[y], background:rep(utf8.len(value)), x)
       fbuffer[y] = insertString(fbuffer[y], foreground:rep(utf8.len(value)), x)
-      io.write("\x1b[" .. y .. ";" .. x .. "H" .. value)
+      write("\x1b[" .. y .. ";" .. x .. "H" .. value)
     else
-      io.write("\x1b[" .. y .. ";" .. x .. "H")
+      write("\x1b[" .. y .. ";" .. x .. "H")
       value:gsub(".", function(c)
-        io.write(c .. "\x1b[D\x1b[B")
+        write(c .. "\x1b[D\x1b[B")
       end)
     end
-    io.flush()
+    flush()
     return true
   end
   function gpu.copy(x, y, w, h, tx, ty) --TODO: Check(check X multiple times)
@@ -156,22 +158,22 @@ function textgpu.start()
 
     for i=1, h do
       local line, linex
-      local write = false
+      local lwrite = false
       for j=1, w do
         if btbuf[i]:sub(j,j) ~= bg then
-          write = true
+          lwrite = true
         end
         if ftbuf[i]:sub(j,j) ~= fg then
-          write = true
+          lwrite = true
         end
         if not line then linex = j end
         line = (line or "")
-        if write then
+        if lwrite then
           local wx = (tx + linex)|0
           local wy = (ty + y + i - 1)|0
-          io.write("\x1b[4" .. bg .. "m")
-          io.write("\x1b[3" .. fg .. "m")
-          io.write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
+          write("\x1b[4" .. bg .. "m")
+          write("\x1b[3" .. fg .. "m")
+          write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
           tbuffer[wy] = insertString(tbuffer[wy], line, wx)
           bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
           fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
@@ -179,7 +181,7 @@ function textgpu.start()
           fg = ftbuf[i]:sub(j,j)
           line = nil
           linex = nil
-          write = false
+          lwrite = false
         end
         if not line then linex = j end
         line = (line or "") .. ttbuf[i]:sub(j,j)
@@ -187,20 +189,20 @@ function textgpu.start()
       if line then
         local wx = (tx + linex)|0
         local wy = (ty + y + i - 1)|0
-        io.write("\x1b[4" .. bg .. "m")
-        io.write("\x1b[3" .. fg .. "m")
-        io.write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
+        write("\x1b[4" .. bg .. "m")
+        write("\x1b[3" .. fg .. "m")
+        write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
         tbuffer[wy] = insertString(tbuffer[wy], line, wx)
         bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
         fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
         line = nil
         linex = nil
-        write = false
+        lwrite = false
       end
     end
-    io.write("\x1b[4" .. background .. "m")
-    io.write("\x1b[3" .. foreground .. "m")
-    io.flush()
+    write("\x1b[4" .. background .. "m")
+    write("\x1b[3" .. foreground .. "m")
+    flush()
     return true
   end
   function gpu.fill(x, y, w, h, ch)
@@ -216,7 +218,7 @@ function textgpu.start()
     return true
   end
 
-  io.write("\x1b[?25l") --Disable cursor
+  write("\x1b[?25l") --Disable cursor
   local w, h = gpu.getResolution()
   prepareBuffers(w, h)
   gpu.setForeground(0xFFFFFF)
@@ -227,7 +229,7 @@ function textgpu.start()
   modules.component.api.register("TODO:SetThisUuid", "keyboard", {})
 
   deadhooks[#deadhooks + 1] = function()
-    io.write("\x1b[?25h") --Enable cursor on quit
+    write("\x1b[?25h") --Enable cursor on quit
   end
 end
 

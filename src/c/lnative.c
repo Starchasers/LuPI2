@@ -18,7 +18,7 @@
 #include <limits.h>
 #include <linux/kd.h>
 
-//Enable in lupi.h
+/* Enable in lupi.h */
 #ifdef LOGGING
 void logn(const char *message) {
   FILE *file;
@@ -73,7 +73,7 @@ static int l_sleep (lua_State *L) {
   return 0;
 }
 
-// Filesystem methods
+/* Filesystem methods */
 static int l_fs_exists (lua_State *L) {
   const char* fname = lua_tostring(L, 1);
   if( access( fname, F_OK ) != -1 ) {
@@ -162,7 +162,7 @@ static int l_fs_write (lua_State *L) {
   size_t len = 0;
   const char* data = lua_tolstring(L, 2, &len);
 
-  //TODO: May not all data be written?
+  /* TODO: May not all data be written? */
   if(write(fd, data, len) == -1) {
     lua_pushboolean(L, 0);
   } else {
@@ -201,7 +201,7 @@ static int l_fs_list (lua_State *L) {
   if ((dir = opendir(path)) != NULL) {
     lua_newtable(L);
     int n = 1;
-    while ((ent = readdir(dir)) != NULL) { //TODO: Check if it should be freed
+    while ((ent = readdir(dir)) != NULL) { /* TODO: Check if it should be freed */
       if(strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0) {
         lua_pushstring(L, ent->d_name);
         lua_rawseti(L, -2, n++);
@@ -220,7 +220,7 @@ static int l_fs_lastModified (lua_State *L) {
   if( stat(path, &s) != -1 ) {
     lua_pushnumber(L, s.st_mtime);
   } else {
-    return 0; //TODO: No error?
+    return 0; /* TODO: No error? */
   }
   return 1;
 }
@@ -266,7 +266,7 @@ static int l_fs_size (lua_State *L) {
   if( stat(path, &s) != -1 ) {
     lua_pushnumber(L, s.st_size);
   } else {
-    return 0; //TODO: No error?
+    return 0; /* TODO: No error? */
   }
   return 1;
 }
@@ -302,14 +302,13 @@ static int l_fs_read (lua_State *L) {
 #define CLOCK_TICK_RATE 1193180
 #endif
 
-//Filesystem end
+/* Filesystem end */
 static int l_beep (lua_State *L) {
   int freq = lua_tonumber(L, 1);
   int btime = lua_tonumber(L, 2);
   int console_fd = -1;
 
   if((console_fd = open("/dev/console", O_WRONLY)) == -1) {
-    //fprintf(stderr, "Could not open /dev/console for writing.\n");
     printf("\a");
     return 0;
   }
@@ -325,7 +324,7 @@ static int l_beep (lua_State *L) {
   return 0;
 }
 
-static int l_uptime (lua_State *L) { //Return ms
+static int l_uptime (lua_State *L) { /* Return ms */
   struct timeval tp;
   gettimeofday(&tp, NULL);
   lua_pushnumber(L, tp.tv_sec * 1000 + tp.tv_usec / 1000);

@@ -12,7 +12,7 @@
 static void handle_winch(int sig){
   signal(SIGWINCH, SIG_IGN);
 
-  //FIXME: Prerelease: Implement
+  /* FIXME: Prerelease: Implement */
   signal(SIGWINCH, handle_winch);
 }
 
@@ -33,7 +33,13 @@ void termutils_start(lua_State *L) {
      return;
   new = old;
 
-  cfmakeraw(&new);
+  new.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
+    | INLCR | IGNCR | ICRNL | IXON);
+  new.c_oflag &= ~OPOST;
+  new.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+  new.c_cflag &= ~(CSIZE | PARENB);
+  new.c_cflag |= CS8;
+
 
 
   if (tcsetattr (STDOUT_FILENO, TCSAFLUSH, &new) != 0)

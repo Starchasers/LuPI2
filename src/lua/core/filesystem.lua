@@ -129,7 +129,7 @@ function filesystem.register(basePath)
     return native.fs_lastModified(realpath(path))
   end
   function fs.getLabel()
-    return --TODO: Implement, use real labels
+    return path --TODO: Implement, use real labels
   end
   function fs.remove(path) --TODO: TEST!!
     checkArg(1, path, "string")

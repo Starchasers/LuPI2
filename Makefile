@@ -3,7 +3,7 @@
 #CC=$(TARGET)-gcc
 CC=gcc
 
-CFLAGS=-O2 -std=c90 -Isrc/lib/lua -Iinclude -DLUA_C89_NUMBERS
+CFLAGS=-O2 -g -std=c99 -Isrc/lib/lua -Iinclude
 
 BUILD = bin/
 SOURCE = src/c/

@@ -33,10 +33,12 @@ function boot.boot()
   else
     xpcall(f, function(e)
       local trace = {}
+
       for s in string.gmatch(debug.traceback(e, 2), "[^\r\n]+") do
         trace[#trace + 1] = s
       end
       bsod("System crashed", "Stack traceback:", table.unpack(trace))
+      os.exit(4) --TODO: Run exit hooks
     end)
     bsod("System quit")
   end

@@ -1,5 +1,9 @@
+# TARGET=arm-none-eabi
+
+#CC=$(TARGET)-gcc
 CC=gcc
-CFLAGS=-g -std=gnu99 -Isrc/lib/lua -Iinclude
+
+CFLAGS=-O2 -std=gnu99 -Isrc/lib/lua -Iinclude
 
 BUILD = bin/
 SOURCE = src/c/
@@ -22,13 +26,8 @@ OBJECTS :=	$(patsubst $(SOURCE)%.c, $(BUILD)%.c.o, $(CFILES))
 $(BUILDDIRECTORIES):
 	mkdir -p $@
 
-#Clean
-
 #Build
 all: smallclean $(BUILDDIRECTORIES) luaresources $(BUILD)lupi
-
-smallclean:
-	find . -name '*~' -type f -exec rm {} \;
 
 build: clean all
 
@@ -51,3 +50,10 @@ cleanresourcues:
 
 clean: cleanresourcues
 	-rm -rf $(BUILD)
+
+smallclean:
+	find . -name '*~' -type f -exec rm {} \;
+
+# Other
+
+.PHONY: clean cleanresourcues luaresources build smallclean all

@@ -20,14 +20,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the author nor the names of its contributors may be
-      used to endorse or promote products derived from this software without
-      specific prior written permission.
+		* Redistributions of source code must retain the above copyright notice,
+			this list of conditions and the following disclaimer.
+		* Redistributions in binary form must reproduce the above copyright
+			notice, this list of conditions and the following disclaimer in the
+			documentation and/or other materials provided with the distribution.
+		* Neither the name of the author nor the names of its contributors may be
+			used to endorse or promote products derived from this software without
+			specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -55,6 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 
 local strbyte, strlen, strsub, type = string.byte, string.len, string.sub, type
+local lutf8 = utf8
 local utf8 = {}
 
 -- returns the number of bytes used by the UTF-8 character at byte i in s
@@ -230,7 +231,27 @@ local function utf8sub(s, i, j)
 	return strsub(s, startByte, endByte)
 end
 
-utf8.sub = utf8sub
+function utf8.sub(s,i,j)
+  i = i or 1
+  j = j or math.maxinteger
+  if i<1 or j<1 then
+  	local n = lutf8.len(s)
+  	if not n then return nil end
+  	if i<0 then i = n+1+i end
+  	if j<0 then j = n+1+j end
+  	if i<0 then i = 1 elseif i>n then i = n end
+  	if j<0 then j = 1 elseif j>n then j = n end
+  end
+  if j<i then return "" end
+  i = lutf8.offset(s,i) or math.maxinteger
+  j = lutf8.offset(s,j+1) or math.maxinteger
+  if i and j then return s:sub(i,j-1)
+  	elseif i then return s:sub(i)
+  	else return ""
+  end
+end
+
+--utf8.sub = utf8sub
 
 -- replace UTF-8 characters based on a mapping table
 local function utf8replace(s, mapping)

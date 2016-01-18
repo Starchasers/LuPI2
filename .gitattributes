@@ -1,0 +1,3 @@
+*.lua -crlf
+*.h -crlf
+*.c -crlf

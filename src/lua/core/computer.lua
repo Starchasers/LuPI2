@@ -157,4 +157,8 @@ function api.totalMemory()
   return native.totalMemory()
 end
 
+function api.shutdown()
+  os.exit(0)
+end
+
 return computer

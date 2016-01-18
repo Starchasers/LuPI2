@@ -17,6 +17,7 @@ io.write = function(...)
   io.flush()
   native.sleep(20000)
 end]]--
+
 local write = io.write
 local flush = io.flush
 

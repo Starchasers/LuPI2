@@ -34,7 +34,7 @@ build: clean all
 $(BUILD)lupi: $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
-$(BUILD)%.c.o: $(SOURCE)%.c $(BUILD)
+$(BUILD)%.c.o: $(SOURCE)%.c
 	$(CC) -c $(CFLAGS) -I /usr/include -I src/c -I src/c/lib/lua $< -o $@
 
 #Resources

@@ -47,7 +47,6 @@ end
 function textgpu.start()
   local gpu = {}
   function gpu.bind() return false, "This is static bound gpu" end
-  function gpu.getScreen() return "n/a" end
   function gpu.setBackground(color, isPaletteIndex)
     checkArg(1, color, "number")
     checkArg(2, isPaletteIndex, "boolean", "nil")
@@ -219,6 +218,12 @@ function textgpu.start()
     return true
   end
 
+  local screenAddr
+
+  function gpu.getScreen()
+    return screenAddr
+  end
+
   write("\x1b[?25l") --Disable cursor
   local w, h = gpu.getResolution()
   prepareBuffers(w, h)
@@ -226,7 +231,7 @@ function textgpu.start()
   gpu.setBackground(0x000000)
 
   modules.component.api.register(nil, "gpu", gpu)
-  modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
+  screenAddr = modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
   modules.component.api.register("TODO:SetThisUuid", "keyboard", {})
 
   deadhooks[#deadhooks + 1] = function()

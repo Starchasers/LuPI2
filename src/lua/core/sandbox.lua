@@ -1,4 +1,14 @@
 local sandbox
+
+local l_wlen = function(text)
+      checkArg(1, text, "string")
+      local i = 0
+      for p, c in utf8.codes(text) do
+        i = i + native.wcwidth(c)
+      end
+      return utf8.len(text)
+    end
+
 sandbox = {
   assert = assert,
   dofile = nil,
@@ -163,20 +173,72 @@ sandbox = {
   unicode = {
     char = utf8.char,
     charWidth = function(c)
-      checkArg(1, c, "string")
-      return modules.utf8.charbytes(c)
+      return l_wlen(c)
     end,
     isWide = function(c)
-      checkArg(1, c, "string")
-      return modules.utf8.charbytes(c) > 1
+      return l_wlen(c) > 1
     end,
     len = utf8.len,
-    lower = modules.utf8.lower,
-    reverse = modules.utf8.reverse,
-    sub = modules.utf8.sub,
-    upper = modules.utf8.upper,
-    wlen = utf8.len, --How is it different from len?
-    --wtrunc?
+    lower = function(text)
+      checkArg(1, text, "string")
+      local s = ""
+      for p, c in utf8.codes(text) do
+        s = s .. utf8.char(native.towlower(c))
+      end
+      return s
+    end,
+    upper = function(text)
+      checkArg(1, text, "string")
+      local s = ""
+      for p, c in utf8.codes(text) do
+        s = s .. utf8.char(native.towupper(c))
+      end
+      return s
+    end,
+    reverse = function(text)
+      checkArg(1, text, "string")
+      local s = ""
+      for p, c in utf8.codes(text) do
+        s = utf8.char(c) .. s
+      end
+      return s
+    end,
+    sub = function(s, i, j)
+      checkArg(1, s, "string")
+      i = i or 1
+      j = j or math.maxinteger
+      if i<1 or j<1 then
+        local n = utf8.len(s)
+        if not n then return nil end
+        if i<0 then i = n+1+i end
+        if j<0 then j = n+1+j end
+        if i<0 then i = 1 elseif i>n then i = n end
+        if j<0 then j = 1 elseif j>n then j = n end
+      end
+      if j<i then return "" end
+      i = utf8.offset(s,i) or math.maxinteger
+      j = utf8.offset(s,j+1) or math.maxinteger
+      if i and j then return s:sub(i,j-1)
+        elseif i then return s:sub(i)
+        else return ""
+      end
+    end,
+    wlen = l_wlen,
+    wtrunc = function(s, l)
+      checkArg(1, s, "string")
+      checkArg(2, l, "number")
+      local width = 0
+      local text = ""
+      for p, c in utf8.codes(s) do
+        if width < l then
+          width = width + native.wcwidth(c)
+          if width < l then
+            text = text .. utf8.char(c)
+          end
+        end
+      end
+      return text
+    end,
   },
   checkArg = checkArg,
   og = _G

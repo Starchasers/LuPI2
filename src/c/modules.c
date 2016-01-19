@@ -18,8 +18,6 @@ void setup_modules(lua_State *L) {
   pushstuple(L, "textgpu", lua_textgpu);
   pushstuple(L, "color", lua_util_color);
   pushstuple(L, "random", lua_util_random);
-  pushstuple(L, "utf8data", lua_utf8_utf8data);
-  pushstuple(L, "utf8", lua_utf8_utf8);
 
   pushstuple(L, "eepromDefault", res_eepromDefault);
 

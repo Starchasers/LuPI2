@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <ftw.h>
+#include <wchar.h>
 #include <limits.h>
 #include <linux/kd.h>
 
@@ -350,6 +351,21 @@ static int l_pull (lua_State *L) {
   return 1;
 }
 
+static int l_wcwidth (lua_State *L) {
+  lua_pushnumber(L, wcwidth(lua_tonumber(L, 1)));
+  return 1;
+}
+
+static int l_towupper (lua_State *L) {
+  lua_pushnumber(L, towupper(lua_tonumber(L, 1)));
+  return 1;
+}
+
+static int l_towlower (lua_State *L) {
+  lua_pushnumber(L, towlower(lua_tonumber(L, 1)));
+  return 1;
+}
+
 void luanative_start(lua_State *L) {
   lua_createtable (L, 0, 1);
   
@@ -370,6 +386,10 @@ void luanative_start(lua_State *L) {
   pushctuple(L, "fs_close", l_fs_close);
   pushctuple(L, "fs_size", l_fs_size);
   pushctuple(L, "fs_read", l_fs_read);
+
+  pushctuple(L, "wcwidth", l_wcwidth);
+  pushctuple(L, "towlower", l_towlower);
+  pushctuple(L, "towupper", l_towupper);
 
   pushctuple(L, "beep", l_beep);
   pushctuple(L, "uptime", l_uptime);

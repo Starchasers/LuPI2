@@ -39,7 +39,7 @@ local function prepareBuffers(w, h)
   end
 end
 
-local usub = modules.utf8.sub
+local usub = modules.sandbox.utf8.sub
 local function insertString(main, sub, at)
   return usub(main, 1, at - 1) .. sub .. usub(main, at + utf8.len(sub))
 end

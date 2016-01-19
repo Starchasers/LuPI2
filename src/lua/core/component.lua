@@ -59,6 +59,11 @@ function api.register(address, ctype, proxy, doc)
     end
   end
   modules.computer.api.pushSignal("component_added", address, ctype)
+  if native.debug then
+    local caller = debug.getinfo(2)
+    local msg = caller.short_src .. ":".. caller.currentline .. " > component.register(" .. address .. ", " .. ctype .. ")"
+    native.log(msg)
+  end
   return address
 end
 
@@ -104,6 +109,7 @@ function api.invoke(address, method, ...)
     local msg = tostring((native.uptime() - start) / 1000) .. " [+" .. native.uptime() - last .. "] " .. caller.short_src .. ":".. caller.currentline .. " > c.invoke(" .. address .. "): "
       .. components[address].type ..  "." .. method
       .. "(" .. table.concat(t, ", ") .. ")"
+    native.log(msg)
   end
   return components[address].rawproxy[method](...)
 end

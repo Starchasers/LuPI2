@@ -1,5 +1,9 @@
 local color = {}
 
+function color.rgbToYuv(r, g, b)
+  return (r * 0.299 + g * 0.587 + b * 0.114), (r * (-0.147) + g * (-0.289) + b * 0.436), (r * 0.615 + g * (-0.515) + b * (-0.1))
+end
+
 function color.rgbToHsv(r, g, b)
   local h, s, v
   local min, max, delta
@@ -53,9 +57,12 @@ end
 function color.nearest(to, colors)
   local lowest = math.huge
   local lowestk = nil
-  local th, ts, tv = color.rgbToHsv((to & 0xFF0000) >> 16, (to & 0xFF00) >> 8, to & 0xFF)
+  local th, ts, tv = color.rgbToYuv((to & 0xFF0000) >> 16, (to & 0xFF00) >> 8, to & 0xFF)
   for k, col in pairs(colors) do
-    local h, s, v = color.rgbToHsv((col & 0xFF0000) >> 16, (col & 0xFF00) >> 8, col & 0xFF)
+    if col == to then
+      return k
+    end
+    local h, s, v = color.rgbToYuv((col & 0xFF0000) >> 16, (col & 0xFF00) >> 8, col & 0xFF)
     local d = math.abs(h - th) + math.abs(s - ts) + math.abs(v - tv)
     if d < lowest then
       lowest = d

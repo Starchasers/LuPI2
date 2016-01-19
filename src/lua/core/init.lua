@@ -62,7 +62,12 @@ function main()
   --Components
   loadModule("eeprom")
   loadModule("gpio")
-  loadModule("textgpu")
+
+  if framebuffer.isReady() then
+    loadModule("fbgpu")
+  else
+    loadModule("textgpu")
+  end
   loadModule("filesystem")
   loadModule("internet")
 
@@ -83,7 +88,12 @@ function main()
     modules.filesystem.register("/", "11111111-1111-1111-1111-111111111111")
   end
   modules.computer.tmp = modules.filesystem.register("/tmp/lupi-" .. modules.random.uuid())
-  modules.textgpu.start()
+
+  if framebuffer.isReady() then
+    modules.fbgpu.start()
+  else
+    modules.textgpu.start()
+  end
 
   if native.debug then
     modules.debug.hook()
@@ -106,6 +116,7 @@ for k, hook in ipairs(deadhooks) do
     lprint(cause)
   end
 end
+
 lprint("Hooks executed: " .. #deadhooks)
 
 if not state then

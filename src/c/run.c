@@ -28,6 +28,7 @@ void run_init() {
   setup_modules   (L);
   luanative_start (L);
   internet_start  (L);
+  fb_start        (L);
   termutils_start (L);
   epoll_prepare();
 

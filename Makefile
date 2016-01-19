@@ -9,10 +9,12 @@ BUILD = bin/
 SOURCE = src/c/
 
 CORELUA = src/lua/core
+RESOURCES = resources
 LIBS=-lm
 
-GENERATED=include/luares.h src/c/gen/luares.c
+GENERATED=include/luares.h src/c/gen/luares.c include/res.h src/c/gen/res.c
 LUAPARAMS = $(CORELUA) include/luares.h src/c/gen/luares.c lua_
+RESPARAMS = $(RESOURCES) include/res.h src/c/gen/res.c res_
 LDFLAGS=-static
 
 SRCDIRECTORIES = $(shell find $(SOURCE) -type d)
@@ -27,7 +29,7 @@ $(BUILDDIRECTORIES):
 	mkdir -p $@
 
 #Build
-all: smallclean $(BUILDDIRECTORIES) luaresources $(BUILD)lupi
+all: smallclean $(BUILDDIRECTORIES) resources $(BUILD)lupi
 
 build: clean all
 
@@ -38,8 +40,9 @@ $(BUILD)%.c.o: $(SOURCE)%.c
 	$(CC) -c $(CFLAGS) -I /usr/include -I src/c -I src/c/lib/lua $< -o $@
 
 #Resources
-luaresources: cleanresourcues
+resources: cleanresourcues
 	scripts/txt2c $(LUAPARAMS)
+	scripts/txt2c $(RESPARAMS)
 
 #Clean rules
 cleanresourcues:
@@ -56,4 +59,4 @@ smallclean:
 
 # Other
 
-.PHONY: clean cleanresourcues luaresources build smallclean all
+.PHONY: clean cleanresourcues resources build smallclean all

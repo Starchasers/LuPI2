@@ -3,7 +3,6 @@
 extern char lua_boot[];
 extern char lua_component[];
 extern char lua_computer[];
-extern char lua_eepromDefault[];
 extern char lua_eeprom[];
 extern char lua_filesystem[];
 extern char lua_init[];

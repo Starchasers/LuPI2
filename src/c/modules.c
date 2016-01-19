@@ -1,4 +1,5 @@
 #include "luares.h"
+#include "res.h"
 #include "lupi.h"
 #include <lua.h>
 #include <lualib.h>
@@ -12,7 +13,6 @@ void setup_modules(lua_State *L) {
   pushstuple(L, "component", lua_component);
   pushstuple(L, "computer", lua_computer);
   pushstuple(L, "eeprom", lua_eeprom);
-  pushstuple(L, "eepromDefault", lua_eepromDefault);
   pushstuple(L, "filesystem", lua_filesystem);
   pushstuple(L, "sandbox", lua_sandbox);
   pushstuple(L, "textgpu", lua_textgpu);
@@ -20,6 +20,8 @@ void setup_modules(lua_State *L) {
   pushstuple(L, "random", lua_util_random);
   pushstuple(L, "utf8data", lua_utf8_utf8data);
   pushstuple(L, "utf8", lua_utf8_utf8);
+
+  pushstuple(L, "eepromDefault", res_eepromDefault);
 
   lua_setglobal(L, "moduleCode");
 }

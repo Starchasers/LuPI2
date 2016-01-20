@@ -21,7 +21,7 @@ function internet.start()
     return {
       finishConnect = function()
         if not sfd then
-          return false, reason
+          error(reason)
         end
         return true
       end,
@@ -38,6 +38,15 @@ function internet.start()
         native.close(sfd)
       end
     }
+  end
+
+  function component.request(url, post)
+    local host = url:match("http://([^/]+)")
+    local con = component.connect(host, 80)
+    if con:finishConnect() then
+      con:write("GET " .. url .. " HTTP/1.1\r\nHost: " .. host .. "\r\n\r\n")
+    end
+
   end
 
   modules.component.api.register(nil, "internet", component)

@@ -39,12 +39,16 @@ local function prepareBuffers(w, h)
   end
 end
 
-local usub = modules.sandbox.utf8.sub
+local usub
 local function insertString(main, sub, at)
+  checkArg(1, main, "string")
+  checkArg(2, sub, "string")
+  checkArg(3, at, "number")
   return usub(main, 1, at - 1) .. sub .. usub(main, at + utf8.len(sub))
 end
 
 function textgpu.start()
+  usub = modules.sandbox.unicode.sub
   local gpu = {}
   function gpu.bind() return false, "This is static bound gpu" end
   function gpu.setBackground(color, isPaletteIndex)
@@ -125,11 +129,15 @@ function textgpu.start()
     x = math.floor(x)
     y = math.floor(y)
     if not vertical then
+      if not tbuffer[y] then
+        return false
+      end
       tbuffer[y] = insertString(tbuffer[y], value, x)
       bbuffer[y] = insertString(bbuffer[y], background:rep(utf8.len(value)), x)
       fbuffer[y] = insertString(fbuffer[y], foreground:rep(utf8.len(value)), x)
       write("\x1b[" .. y .. ";" .. x .. "H" .. value)
     else
+      --TODO: Buffers!
       write("\x1b[" .. y .. ";" .. x .. "H")
       value:gsub(".", function(c)
         write(c .. "\x1b[D\x1b[B")
@@ -171,12 +179,14 @@ function textgpu.start()
         if lwrite then
           local wx = (tx + linex)|0
           local wy = (ty + y + i - 1)|0
-          write("\x1b[4" .. bg .. "m")
-          write("\x1b[3" .. fg .. "m")
-          write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
-          tbuffer[wy] = insertString(tbuffer[wy], line, wx)
-          bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
-          fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
+          if tbuffer[wy] then
+            write("\x1b[4" .. bg .. "m")
+            write("\x1b[3" .. fg .. "m")
+            write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
+            tbuffer[wy] = insertString(tbuffer[wy], line, wx)
+            bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
+            fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
+          end
           bg = btbuf[i]:sub(j,j)
           fg = ftbuf[i]:sub(j,j)
           line = nil
@@ -189,12 +199,14 @@ function textgpu.start()
       if line then
         local wx = (tx + linex)|0
         local wy = (ty + y + i - 1)|0
-        write("\x1b[4" .. bg .. "m")
-        write("\x1b[3" .. fg .. "m")
-        write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
-        tbuffer[wy] = insertString(tbuffer[wy], line, wx)
-        bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
-        fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
+        if tbuffer[wy] then
+          write("\x1b[4" .. bg .. "m")
+          write("\x1b[3" .. fg .. "m")
+          write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
+          tbuffer[wy] = insertString(tbuffer[wy], line, wx)
+          bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
+          fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
+        end
         line = nil
         linex = nil
         lwrite = false

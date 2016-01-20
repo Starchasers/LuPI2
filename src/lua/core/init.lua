@@ -43,8 +43,6 @@ function main()
   --Utils
   loadModule("random")
   loadModule("color")
-  loadModule("utf8data")
-  loadModule("utf8")
 
   modules.address = modules.random.uuid() --TODO: PREALPHA: Make constant
 

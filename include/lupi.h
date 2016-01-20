@@ -25,6 +25,7 @@ void run_init();
 void luanative_start(lua_State *L);
 void setup_modules(lua_State *L);
 void termutils_start(lua_State *L);
+void internet_start(lua_State *L);
 void epoll_prepare();
 int epoll_pull(int timeout);
 

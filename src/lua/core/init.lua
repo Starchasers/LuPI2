@@ -56,6 +56,7 @@ function main()
   loadModule("eeprom")
   loadModule("textgpu")
   loadModule("filesystem")
+  loadModule("internet")
 
   --Userspace
   loadModule("sandbox")
@@ -67,6 +68,7 @@ function main()
   _G.pushEvent = modules.computer.api.pushSignal
 
   modules.eeprom.register()
+  modules.internet.start()
   modules.filesystem.register("root")
   modules.filesystem.register("/") --TODO: remove from release
   modules.computer.tmp = modules.filesystem.register("/tmp/lupi-" .. modules.random.uuid())

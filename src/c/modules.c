@@ -10,16 +10,18 @@ void setup_modules(lua_State *L) {
   lua_createtable (L, 0, 1);
 
   pushstuple(L, "boot", lua_boot);
+  pushstuple(L, "color", lua_util_color);
   pushstuple(L, "component", lua_component);
   pushstuple(L, "computer", lua_computer);
   pushstuple(L, "eeprom", lua_eeprom);
   pushstuple(L, "filesystem", lua_filesystem);
+  pushstuple(L, "internet", lua_internet);
   pushstuple(L, "sandbox", lua_sandbox);
   pushstuple(L, "textgpu", lua_textgpu);
-  pushstuple(L, "color", lua_util_color);
   pushstuple(L, "random", lua_util_random);
   pushstuple(L, "utf8data", lua_utf8_utf8data);
   pushstuple(L, "utf8", lua_utf8_utf8);
+
 
   pushstuple(L, "eepromDefault", res_eepromDefault);
 

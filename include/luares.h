@@ -6,6 +6,7 @@ extern char lua_computer[];
 extern char lua_eeprom[];
 extern char lua_filesystem[];
 extern char lua_init[];
+extern char lua_internet[];
 extern char lua_sandbox[];
 extern char lua_textgpu[];
 extern char lua_utf8_utf8data[];

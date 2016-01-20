@@ -26,6 +26,7 @@ void run_init() {
   luaL_openlibs   (L);
   setup_modules   (L);
   luanative_start (L);
+  internet_start  (L);
   termutils_start (L);
   epoll_prepare();
 

@@ -4,10 +4,11 @@ fact that GNU/Linux + python solution isn't allays the best for people that have
 intuitive languages. It has only 6 types, very simple syntax, yet supports many advanced mechanisms.
 
 Running
-----
+-----
 1. Clone this repository
 2. Get `xxd` utility(usually packaged with vim)
 3. Execute `make build`
+4. You will need to put some OS to `root` directory where you run the binary. For now you can get plan9k at http://cloud.magik6k.net/index.php/s/7jPRAU037dzt8Ga/download
 
 Idea
 -----
@@ -35,3 +36,10 @@ Implementation
 On the low-level side LuPI will run on very stripped-down version of Linux kernel as init, it will be the only binary executable in system. Kernel will 
 only provide hardware drivers and abstract some of the things. Entire userspace is meant to be done using Lua. Security isn't the primary goal but still 
 needs to be considered.
+
+Get involved
+-----
+There are many ways you can help.
+* Report issues
+* Contribete via pull requests
+* Talk on IRC (#lupi on Freenode)

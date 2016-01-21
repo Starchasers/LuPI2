@@ -3,6 +3,12 @@ Second attempt at Lua based operating system, primarily aimed at RaspberryPi, bu
 fact that GNU/Linux + python solution isn't allays the best for people that haven't been programming ever, and Lua in one of the simplest, most 
 intuitive languages. It has only 6 types, very simple syntax, yet supports many advanced mechanisms.
 
+Running
+----
+1. Clone this repository
+2. Get `xxd` utility(usually packaged with vim)
+3. Execute `make build`
+
 Idea
 -----
 Design of system APIs is heavily influenced by [OpenComputers](https://github.com/MightyPirates/OpenComputers) minecraft mod. Some Lua code parts are 

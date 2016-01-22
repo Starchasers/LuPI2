@@ -1,1 +1,4 @@
+# Ignore binary objects and build results
 *.o
+/bin
+/src/c/gen

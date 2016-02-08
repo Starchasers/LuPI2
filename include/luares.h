@@ -9,6 +9,7 @@ extern char lua_init[];
 extern char lua_internet[];
 extern char lua_sandbox[];
 extern char lua_textgpu[];
+extern char lua_util_buffer[];
 extern char lua_util_color[];
 extern char lua_util_random[];
 #endif

@@ -19,7 +19,7 @@ void setup_modules(lua_State *L) {
   pushstuple(L, "sandbox", lua_sandbox);
   pushstuple(L, "textgpu", lua_textgpu);
   pushstuple(L, "random", lua_util_random);
-
+  pushstuple(L, "buffer", lua_util_buffer);
 
   pushstuple(L, "eepromDefault", res_eepromDefault);
 

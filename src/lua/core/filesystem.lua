@@ -73,8 +73,9 @@ function filesystem.register(basePath)
     checkArg(1, path, "string")
     checkArg(2, path, "string", "nil")
     local m = "r"
-    if mode == "a" then m = "a"
-    elseif mode == "w" then m = "w" end
+    mode = mode or ""
+    if mode:match("a") then m = "a"
+    elseif mode:match("w") then m = "w" end
     local fd = native.fs_open(realpath(path), m)
     if not fd then
       return nil, path

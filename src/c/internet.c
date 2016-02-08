@@ -18,7 +18,7 @@
 
 static int l_open(lua_State *L) { //TODO: Any mem leaks?
   const char* hostaddr = lua_tostring(L, 1);
-  const char* port = lua_tostring(L, 2);
+  int port = lua_tonumber(L, 2);
 
   struct addrinfo hints, *servinfo, *p;
   int status;
@@ -27,7 +27,7 @@ static int l_open(lua_State *L) { //TODO: Any mem leaks?
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
-  if ((status = getaddrinfo(hostaddr, port, &hints, &servinfo)) != 0) {
+  if ((status = getaddrinfo(hostaddr, NULL, &hints, &servinfo)) != 0) {
     lua_pushnil(L);
     lua_pushstring(L, gai_strerror(status));
     return 2;
@@ -35,6 +35,12 @@ static int l_open(lua_State *L) { //TODO: Any mem leaks?
 
   int sockfd;
   for(p = servinfo; p != NULL; p = p->ai_next) {
+    if(p->ai_family == AF_INET) {
+        ((struct sockaddr_in*)p->ai_addr)->sin_port = htons(port);
+    } else {
+      ((struct sockaddr_in6*)p->ai_addr)->sin6_port = htons(port);
+    }
+
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
       continue;
     }

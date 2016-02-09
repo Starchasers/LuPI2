@@ -15,6 +15,7 @@
 #include <strings.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <signal.h>
 
 static int l_open(lua_State *L) { //TODO: Any mem leaks?
   const char* hostaddr = lua_tostring(L, 1);
@@ -75,7 +76,10 @@ static int l_write(lua_State *L) {
 
   while(total < len) {
     n = send(fd, data+total, len, 0);
-    if (n == -1) { break; }
+    if (n == -1) {
+      if(errno == EPIPE)
+        return 0;
+    }
     total += n;
     len -= n;
   }
@@ -106,6 +110,8 @@ static int l_read(lua_State *L) {
 }
 
 void internet_start(lua_State *L) {
+  signal(SIGPIPE, SIG_IGN);
+
   lua_createtable (L, 0, 1);
 
   pushctuple(L, "open", l_open);

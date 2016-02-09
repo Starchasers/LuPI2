@@ -62,10 +62,20 @@ void logm(const char *message) {
     fclose(file);
   }
 }
+
+static int l_log (lua_State *L) {
+  const char* t = lua_tostring(L, 1);
+  logn(t);
+  return 0;
+}
+
 #else
 #define logn(m)
 #define logi(m)
 #define logm(m)
+static int l_log (lua_State *L) {
+  return 0;
+}
 #endif
 
 static int l_sleep (lua_State *L) {
@@ -370,6 +380,7 @@ void luanative_start(lua_State *L) {
   lua_createtable (L, 0, 1);
   
   pushctuple(L, "sleep", l_sleep);
+  pushctuple(L, "log", l_log);
 
   pushctuple(L, "fs_exists", l_fs_exists);
   pushctuple(L, "fs_mkdir", l_fs_mkdir);
@@ -396,6 +407,12 @@ void luanative_start(lua_State *L) {
   pushctuple(L, "totalMemory", l_totalMemory);
   pushctuple(L, "freeMemory", l_freeMemory);
   pushctuple(L, "pull", l_pull);
+
+  #ifdef DEBUG
+    lua_pushstring(L, "debug");
+    lua_pushboolean(L, 1);
+    lua_settable(L, -3);
+  #endif
 
   lua_setglobal(L, "native");
 }

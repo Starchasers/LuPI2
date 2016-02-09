@@ -5,20 +5,29 @@ function boot.boot()
   local w, h = gpu.getResolution()
 
   local function bsod(...)
-    gpu.setBackground(0x0000FF)
-    gpu.setForeground(0xFFFFFF)
-    gpu.fill(1, 1, w, h, " ")
-    gpu.set(2, 2, "CRITICAL ERROR OCCURED")
-    gpu.set(2, 3, "Lua BIOS has failed:")
-    for n, v in pairs({...}) do
-      gpu.set(2, 4 + n, tostring(v))
-    end
-    gpu.set(2, h-1, "SYSTEM WILL STOP")
-    gpu.setForeground(0xFFFFFF)
-    gpu.setBackground(0x000000)
+    local arg = {...}
+    pcall(function()    
+      native.log("> LuPI BSOD")
+      for n, v in pairs(arg) do
+        native.log(tostring(v))
+      end
+    end)
+    pcall(function()
+      gpu.setBackground(0x0000FF)
+      gpu.setForeground(0xFFFFFF)
+      gpu.fill(1, 1, w, h, " ")
+      gpu.set(2, 2, "CRITICAL ERROR OCCURED")
+      gpu.set(2, 3, "Lua BIOS has failed:")
+      for n, v in pairs(arg) do
+        gpu.set(2, 4 + n, tostring(v))
+      end
+      gpu.set(2, h-1, "SYSTEM WILL STOP")
+      gpu.setForeground(0xFFFFFF)
+      gpu.setBackground(0x000000)
 
-    native.sleep(4000000)
-    os.exit(1)
+      native.sleep(4000000)
+      os.exit(1)
+    end)
   end
 
   gpu.fill(1, 1, w, h, " ")
@@ -31,6 +40,7 @@ function boot.boot()
   if not f then
     bsod(reason)
   else
+    local crash = false
     xpcall(f, function(e)
       local trace = {}
 
@@ -38,9 +48,11 @@ function boot.boot()
         trace[#trace + 1] = s
       end
       bsod("System crashed", "Stack traceback:", table.unpack(trace))
-      os.exit(4) --TODO: Run exit hooks
+      crash = true
     end)
-    bsod("System quit")
+    if not crash then
+      bsod("System quit")
+    end
   end
 end
 

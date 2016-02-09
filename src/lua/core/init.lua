@@ -17,12 +17,17 @@ end
 -------------------------------------------------------------------------------
 math.randomseed(native.uptime())--TODO: Make it better?
 
-print("LuPI L1 INIT")
+lprint = function (...)
+  print(...)
+  native.log(table.concat({...}, " "))
+end
+
+lprint("LuPI L1 INIT")
 modules = {}
 deadhooks = {}
 
 local function loadModule(name)
-  print("LuPI L1 INIT > Load module > " .. name)
+  lprint("LuPI L1 INIT > Load module > " .. name)
   io.flush()
   --TODO: PRERELEASE: Module sandboxing, preferably secure-ish
   --TODO: ASAP: Handle load errors
@@ -31,7 +36,7 @@ local function loadModule(name)
   end
   local code, reason = load(moduleCode[name], "=Module "..name)
   if not code then
-    print("Failed loading module " .. name .. ": " .. reason)
+    lprint("Failed loading module " .. name .. ": " .. reason)
     io.flush()
   else
     modules[name] = code()
@@ -41,6 +46,9 @@ end
 function main()
   --Load modules
   --Utils
+  if native.debug then
+    loadModule("debug")
+  end
   loadModule("random")
   loadModule("color")
   loadModule("buffer")
@@ -73,20 +81,30 @@ function main()
   modules.computer.tmp = modules.filesystem.register("/tmp/lupi-" .. modules.random.uuid())
   modules.textgpu.start()
 
+  if native.debug then
+    modules.debug.hook()
+  end
+
   modules.boot.boot()
 end
 
-local state, cause = pcall(main)
-if not state then
-  print("LuPI finished with following error:")
-  print(cause)
-end
+local tb = ""
 
-print("Running shutdown hooks")
+local state, cause = xpcall(main, function(e)
+  tb = debug.traceback(e, 2)
+end)
+
+lprint("Running shutdown hooks")
 for k, hook in ipairs(deadhooks) do
   local state, cause = pcall(hook)
   if not state then
-    print("Shutdown hook with following error:")
-    print(cause)
+    lprint("Shutdown hook with following error:")
+    lprint(cause)
   end
+end
+lprint("Hooks executed: " .. #deadhooks)
+
+if not state then
+  lprint("LuPI finished with following error:")
+  lprint(tb)
 end

@@ -13,6 +13,7 @@ void setup_modules(lua_State *L) {
   pushstuple(L, "color", lua_util_color);
   pushstuple(L, "component", lua_component);
   pushstuple(L, "computer", lua_computer);
+  pushstuple(L, "debug", lua_debug);
   pushstuple(L, "eeprom", lua_eeprom);
   pushstuple(L, "filesystem", lua_filesystem);
   pushstuple(L, "internet", lua_internet);

@@ -118,12 +118,17 @@ function api.pushSignal(s, ...)
 end
 
 function api.pullSignal(timeout)
-  if signalQueue[1] then return table.unpack(table.remove(signalQueue, 1)) end
+  --native.log("pullSignal for " .. (timeout or " infinite") .. " s")
+  if signalQueue[1] then
+    native.log("pullSignal direct: " .. signalQueue[1][1])
+    return table.unpack(table.remove(signalQueue, 1))
+  end
   local timeoutuptime = math.huge
 
   if not timeout then
     timeout = -1
   else
+    if timeout < 0 then timeout = 0 end
     timeout = timeout * 1000
     timeoutuptime = native.uptime() + timeout
   end
@@ -131,7 +136,11 @@ function api.pullSignal(timeout)
   repeat
     nevts = native.pull(timeout)
   until nevts > 0 or native.uptime() > timeoutuptime
-  if signalQueue[1] then return table.unpack(table.remove(signalQueue, 1)) end
+  if signalQueue[1] then
+    native.log("pullSignal native: " .. signalQueue[1][1])
+    return table.unpack(table.remove(signalQueue, 1))
+  end
+  --native.log("pullSignal timeout")
 end
 
 function api.uptime()
@@ -158,6 +167,17 @@ function api.totalMemory()
 end
 
 function api.shutdown()
+  --TODO: Longjmp to init somehow?
+  print("Running shutdown hooks")
+  for k, hook in ipairs(deadhooks) do
+    local state, cause = pcall(hook)
+    if not state then
+      print("Shutdown hook with following error:")
+      print(cause)
+    end
+  end
+  print("Hooks executed: " .. #deadhooks)
+
   os.exit(0)
 end
 

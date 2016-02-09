@@ -241,7 +241,6 @@ sandbox = {
     end,
   },
   checkArg = checkArg,
-  og = _G
 }
 
 sandbox._G = sandbox

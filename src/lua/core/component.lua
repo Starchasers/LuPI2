@@ -10,6 +10,29 @@ local componentCallback = {
   __tostring = function(self) return (components[self.address] ~= nil and components[self.address].doc[self.name] ~= nil) and components[self.address].doc[self.name] or "function" end
 }
 
+if native.debug then
+  local start = native.uptime()
+  local last = native.uptime()
+  componentCallback.__call = function(self, ...)
+    local t = {}
+    for k,v in pairs({...}) do
+      if type(v) == "string" then
+        v = "\"" .. v .. "\""
+      end
+      t[k] = tostring(v)
+    end
+
+    local caller = debug.getinfo(2)
+    local msg = tostring((native.uptime() - start) / 1000) .. " [+" .. native.uptime() - last .. "] " .. caller.short_src .. ":".. caller.currentline .. " > invoke(" .. self.address .. "): "
+      .. components[self.address].type ..  "." .. self.name
+      .. "(" .. table.concat(t, ", ") .. ")"
+
+    native.log(msg)
+    last = native.uptime()
+    return components[self.address].rawproxy[self.name](...)
+  end
+end
+
 function component.prepare()
   print("Assembling initial component tree")
 end

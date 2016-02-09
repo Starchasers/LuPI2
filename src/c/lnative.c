@@ -17,7 +17,9 @@
 #include <ftw.h>
 #include <wchar.h>
 #include <limits.h>
-#include <linux/kd.h>
+/* #include <sys/kd.h> */
+
+#define KIOCSOUND 0x4B2F  /* start sound generation (0 for off) */
 
 /* Enable in lupi.h */
 #ifdef LOGGING

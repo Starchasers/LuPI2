@@ -6,7 +6,8 @@ intuitive languages. It has only 6 types, very simple syntax, yet supports many 
 Running
 -----
 1. Clone this repository
-2. Get `xxd` utility(usually packaged with vim)
+2. Get musl libc(with musl-gcc wrapper)
+2.5 Get `xxd` utility(usually packaged with vim)
 3. Execute `make build`
 4. You will need to put some OS to `root` directory where you run the binary. For now you can get plan9k at http://cloud.magik6k.net/index.php/s/7jPRAU037dzt8Ga/download
 

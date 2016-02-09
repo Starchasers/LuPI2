@@ -1,7 +1,7 @@
 # LuPI2 Makefile
 
 # Default compiler settings.
-CC?=cc
+CC = musl-gcc
 CFLAGS?=-O2 -std=c99
 LDFLAGS+= -static
 

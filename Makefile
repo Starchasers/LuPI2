@@ -28,7 +28,8 @@ OBJECTS :=	$(patsubst $(SOURCE)/%.c, $(BUILD)%.c.o, $(CFILES))
 # Targets
 
 # Pseudo Targets
-debug: CFLAGS+= -g
+debug: CFLAGS+= -g -DLOGGING -DDEBUG
+debug: build
 
 $(BUILDDIRECTORIES):
 	mkdir -p $@
@@ -63,4 +64,4 @@ smallclean:
 
 # Other
 
-.PHONY: clean cleanresourcues resources build smallclean all
+.PHONY: debug clean cleanresourcues resources build smallclean all

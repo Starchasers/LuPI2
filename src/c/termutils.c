@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+struct termios old, new;
+
 static void handle_winch(int sig){
   signal(SIGWINCH, SIG_IGN);
 
@@ -24,11 +26,19 @@ static int l_get_term_sz (lua_State *L) {
   return 2;
 }
 
+static int l_term_restore (lua_State *L) {
+  tcsetattr (STDOUT_FILENO, TCSAFLUSH, &old);
+  return 0;
+}
+
+static int l_term_init (lua_State *L) {
+  tcsetattr (STDOUT_FILENO, TCSAFLUSH, &new);
+  return 0;
+}
 
 void termutils_start(lua_State *L) {
   signal(SIGWINCH, handle_winch);
 
-  struct termios old, new;
   if (tcgetattr (STDOUT_FILENO, &old) != 0)
      return;
   new = old;
@@ -40,13 +50,10 @@ void termutils_start(lua_State *L) {
   new.c_cflag &= ~(CSIZE | PARENB);
   new.c_cflag |= CS8;
 
-
-
-  if (tcsetattr (STDOUT_FILENO, TCSAFLUSH, &new) != 0)
-    return;
-
   lua_createtable (L, 0, 1);
   pushctuple(L, "getSize", l_get_term_sz);
+  pushctuple(L, "init", l_term_init);
+  pushctuple(L, "restore", l_term_restore);
   
   lua_setglobal(L, "termutils");
 }

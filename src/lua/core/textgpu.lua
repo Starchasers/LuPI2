@@ -44,11 +44,14 @@ local function insertString(main, sub, at)
   checkArg(1, main, "string")
   checkArg(2, sub, "string")
   checkArg(3, at, "number")
-  return usub(main, 1, at - 1) .. sub .. usub(main, at + utf8.len(sub))
+
+  return usub(main, 1, at - 1)
+    .. sub .. usub(main, at + (utf8.len(sub) or 0))
 end
 
 function textgpu.start()
   usub = modules.sandbox.unicode.sub
+  local _height = 0
   local gpu = {}
   function gpu.bind() return false, "This is static bound gpu" end
   function gpu.setBackground(color, isPaletteIndex)
@@ -157,9 +160,15 @@ function textgpu.start()
     local btbuf = {}
     local ftbuf = {}
     for i=1, h do
-      ttbuf[i] = tbuffer[y + i - 1] and tbuffer[y + i - 1]:sub(x, x + w - 1) or (" "):rep(w)
-      btbuf[i] = bbuffer[y + i - 1] and bbuffer[y + i - 1]:sub(x, x + w - 1) or background:rep(w)
-      ftbuf[i] = fbuffer[y + i - 1] and fbuffer[y + i - 1]:sub(x, x + w - 1) or foreground:rep(w)
+      if i + y - 2 <= h and i + y > 1 then
+        ttbuf[i] = tbuffer[y + i - 1] and usub(tbuffer[y + i - 1], x, x + w - 1) or (" "):rep(w)
+        btbuf[i] = bbuffer[y + i - 1] and bbuffer[y + i - 1]:sub(x, x + w - 1) or background:rep(w)
+        ftbuf[i] = fbuffer[y + i - 1] and fbuffer[y + i - 1]:sub(x, x + w - 1) or foreground:rep(w)
+      else
+        ttbuf[i] = (" "):rep(w)
+        btbuf[i] = background:rep(w)
+        ftbuf[i] = foreground:rep(w)
+      end
     end
     local bg = background
     local fg = foreground
@@ -179,14 +188,14 @@ function textgpu.start()
         if lwrite then
           local wx = (tx + linex)|0
           local wy = (ty + y + i - 1)|0
-          if tbuffer[wy] then
-            write("\x1b[4" .. bg .. "m")
-            write("\x1b[3" .. fg .. "m")
-            write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
-            tbuffer[wy] = insertString(tbuffer[wy], line, wx)
-            bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
-            fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
-          end
+          tbuffer[wy] = tbuffer[wy] or (" "):rep(utf8.len(line))
+          write("\x1b[4" .. bg .. "m")
+          write("\x1b[3" .. fg .. "m")
+          write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
+          tbuffer[wy] = insertString(tbuffer[wy], line, wx)
+          bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
+          fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
+        
           bg = btbuf[i]:sub(j,j)
           fg = ftbuf[i]:sub(j,j)
           line = nil
@@ -194,19 +203,19 @@ function textgpu.start()
           lwrite = false
         end
         if not line then linex = j end
-        line = (line or "") .. ttbuf[i]:sub(j,j)
+        line = (line or "") .. usub(ttbuf[i], j,j)
       end
       if line then
         local wx = (tx + linex)|0
         local wy = (ty + y + i - 1)|0
-        if tbuffer[wy] then
-          write("\x1b[4" .. bg .. "m")
-          write("\x1b[3" .. fg .. "m")
-          write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
-          tbuffer[wy] = insertString(tbuffer[wy], line, wx)
-          bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
-          fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
-        end
+        tbuffer[wy] = tbuffer[wy] or (" "):rep(utf8.len(line))
+        write("\x1b[4" .. bg .. "m")
+        write("\x1b[3" .. fg .. "m")
+        write("\x1b[" .. wy .. ";" .. wx .. "H" .. line)
+        tbuffer[wy] = insertString(tbuffer[wy], line, wx)
+        bbuffer[wy] = insertString(bbuffer[wy], bg:rep(utf8.len(line)), wx)
+        fbuffer[wy] = insertString(fbuffer[wy], fg:rep(utf8.len(line)), wx)
+
         line = nil
         linex = nil
         lwrite = false
@@ -223,9 +232,11 @@ function textgpu.start()
     checkArg(3, w, "number")
     checkArg(4, h, "number")
     checkArg(5, ch, "string")
-    ch = ch:sub(1, 1):rep(math.floor(w))
+    ch = usub(ch, 1, 1):rep(math.floor(w))
     for i=1, h do
-      gpu.set(x, y + i - 1, ch)
+      if i + y - 1 <= h and i + y > 1 then
+        gpu.set(x, y + i - 1, ch)
+      end
     end
     return true
   end
@@ -236,8 +247,10 @@ function textgpu.start()
     return screenAddr
   end
 
+  termutils.init()
   write("\x1b[?25l") --Disable cursor
   local w, h = gpu.getResolution()
+  _height = h
   prepareBuffers(w, h)
   gpu.setForeground(0xFFFFFF)
   gpu.setBackground(0x000000)
@@ -247,7 +260,9 @@ function textgpu.start()
   modules.component.api.register("TODO:SetThisUuid", "keyboard", {})
 
   deadhooks[#deadhooks + 1] = function()
-    write("\x1b[?25h") --Enable cursor on quit
+    write("\x1b[?25h\x1b[" .. ((h-1)|0) .. ";1H") --Enable cursor on quit
+    io.flush()
+    termutils.restore()
   end
 end
 

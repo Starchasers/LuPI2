@@ -10,9 +10,11 @@ local componentCallback = {
   __tostring = function(self) return (components[self.address] ~= nil and components[self.address].doc[self.name] ~= nil) and components[self.address].doc[self.name] or "function" end
 }
 
+--Debug only
+local start = native.uptime()
+local last = native.uptime()
+
 if native.debug then
-  local start = native.uptime()
-  local last = native.uptime()
   componentCallback.__call = function(self, ...)
     local t = {}
     for k,v in pairs({...}) do
@@ -88,6 +90,20 @@ function api.invoke(address, method, ...)
   end
   if not components[address].rawproxy[method] then
     error("No such method: " .. tostring(components[address].type) .. "." .. tostring(method))
+  end
+  if native.debug then  --TODO: This may generate little performance hit
+    local t = {}
+    for k,v in pairs({...}) do
+      if type(v) == "string" then
+        v = "\"" .. v .. "\""
+      end
+      t[k] = tostring(v)
+    end
+    
+    local caller = debug.getinfo(2)
+    local msg = tostring((native.uptime() - start) / 1000) .. " [+" .. native.uptime() - last .. "] " .. caller.short_src .. ":".. caller.currentline .. " > c.invoke(" .. address .. "): "
+      .. components[address].type ..  "." .. method
+      .. "(" .. table.concat(t, ", ") .. ")"
   end
   return components[address].rawproxy[method](...)
 end

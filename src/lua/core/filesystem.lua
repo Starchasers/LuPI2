@@ -50,7 +50,7 @@ local function concat(pathA, pathB, ...)
   return canonical(_concat(2, pathA, pathB, ...))
 end
 
-function filesystem.register(basePath)
+function filesystem.register(basePath, uuid)
   checkArg(1, basePath, "string")
 
   if not native.fs_exists(basePath) then
@@ -156,7 +156,7 @@ function filesystem.register(basePath)
     checkArg(1, value, "number")
     return value --TODO: Implement, use real labels
   end
-  return modules.component.api.register(nil, "filesystem", fs)
+  return modules.component.api.register(uuid, "filesystem", fs)
 end
 
 return filesystem

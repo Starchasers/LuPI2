@@ -77,7 +77,9 @@ function main()
   modules.eeprom.register()
   modules.internet.start()
   modules.filesystem.register("root")
-  modules.filesystem.register("/") --TODO: remove from release
+  if native.debug then
+    modules.filesystem.register("/", "11111111-1111-1111-1111-111111111111")
+  end
   modules.computer.tmp = modules.filesystem.register("/tmp/lupi-" .. modules.random.uuid())
   modules.textgpu.start()
 

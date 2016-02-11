@@ -61,11 +61,25 @@ function internet.start()
   end
 
   function component.request(url, post)
-    local host = url:match("http://([^/]+)")
-    if not host then io.stderr:write("LERR" .. url .. "\n") end
+    checkArg(1, url, "string")
+    checkArg(2, post, "string", "nil")
+    local host, uri = url:match("http://([^/]+)([^#]+)")
+    if not host then native.log("internet.request host match error: " .. url .. "\n") end
     local socket = component.connect(host, 80)
     if socket.finishConnect() then
-      socket.write("GET " .. url .. " HTTP/1.1\r\nHost: " .. host .. "\r\nConnection: close\r\n\r\n")
+      local request
+      if not post then
+        request = "GET " .. uri .. " HTTP/1.1\r\nHost: " .. host .. "\r\nConnection: close\r\n\r\n"
+      else
+        request = "POST " .. uri .. " HTTP/1.1\r\nHost: " .. host .. "\r\nConnection: close\r\n"
+          .. "Content-Type: application/x-www-form-urlencoded\r\nUser-Agent: LuPI/1.0\r\n"
+          .. "Content-Length: " .. math.floor(#post) .. "\r\n\r\n"
+          .. post .. "\r\n\r\n"
+      end
+      socket.write(request)
+      if native.debug then
+        native.log("internet.request:\n-- request begin --\n" .. request .. "\n-- request end --")
+      end
     end
 
     local stream = {}
@@ -102,6 +116,9 @@ function internet.start()
     local finishConnect = function() --Read header
       header = {}
       header.status = connection:read("*l"):match("HTTP/.%.. (%d+) (.+)\r")
+      if native.debug then
+        native.log("internet.request:\n-- response begin --\n" .. header.status .. "\n")
+      end
       while true do
         local line = connection:read("*l")
         if not line or line == "" or line == "\r" then
@@ -109,6 +126,12 @@ function internet.start()
         end
         local k, v = line:match("([^:]+): (.+)\r")
         header[k:lower()] = v
+        if native.debug then
+          native.log(line)
+        end
+      end
+      if native.debug then
+        native.log("-- response end --")
       end
       header["content-length"] = tonumber(header["content-length"])
     end
@@ -119,7 +142,7 @@ function internet.start()
         if not header then
           finishConnect()
         end
-        if header["content-length"] < 1 then
+        if not header["content-length"] or header["content-length"] < 1 then
           return nil
         end
         checkArg(1, n, "number", "nil")

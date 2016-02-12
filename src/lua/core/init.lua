@@ -61,6 +61,7 @@ function main()
 
   --Components
   loadModule("eeprom")
+  loadModule("gpio")
   loadModule("textgpu")
   loadModule("filesystem")
   loadModule("internet")
@@ -75,6 +76,7 @@ function main()
   _G.pushEvent = modules.computer.api.pushSignal
 
   modules.eeprom.register()
+  modules.gpio.register()
   modules.internet.start()
   modules.filesystem.register("root")
   if native.debug then

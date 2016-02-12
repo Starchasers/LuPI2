@@ -16,6 +16,7 @@ void setup_modules(lua_State *L) {
   pushstuple(L, "debug", lua_debug);
   pushstuple(L, "eeprom", lua_eeprom);
   pushstuple(L, "filesystem", lua_filesystem);
+  pushstuple(L, "gpio", lua_gpio);
   pushstuple(L, "internet", lua_internet);
   pushstuple(L, "sandbox", lua_sandbox);
   pushstuple(L, "textgpu", lua_textgpu);

@@ -21,6 +21,7 @@ lua_State* getL() {
 }
 
 void run_init() {
+  lupi_init();
   L = luaL_newstate();
 
   luaL_openlibs   (L);

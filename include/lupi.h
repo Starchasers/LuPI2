@@ -22,6 +22,7 @@ void logm(const char *message);
 lua_State* getL();
 
 void run_init();
+void lupi_init();
 void luanative_start(lua_State *L);
 void setup_modules(lua_State *L);
 void termutils_start(lua_State *L);

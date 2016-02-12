@@ -3,18 +3,21 @@ Second attempt at Lua based operating system, primarily aimed at RaspberryPi, bu
 fact that GNU/Linux + python solution isn't allays the best for people that haven't been programming ever, and Lua in one of the simplest, most 
 intuitive languages. It has only 6 types, very simple syntax, yet supports many advanced mechanisms.
 
-Running
+Build
 -----
 1. Clone this repository
-2. Get musl libc(with musl-gcc wrapper)
-2.5 Get `xxd` utility(usually packaged with vim)
-3. Execute `make build`
-4. You will need to put some OS to `root` directory where you run the binary. For now you can get plan9k at http://cloud.magik6k.net/index.php/s/7jPRAU037dzt8Ga/download
+2. Get musl libc (with musl-gcc wrapper), or compile musl cross compiler(like arm-linux-musleabihf)
+3. Get `xxd` utility (usually packaged with vim)
+4. Build dependencies using scripts/dependencies.sh script
+5. Execute `make build`
+6. You will need to put some OS to `root` directory where you run the binary. For now you can get plan9k at https://cloud.magik6k.net/index.php/s/7jPRAU037dzt8Ga/download
+
+In case of problems poke me/someone at #lupi on Freenode
 
 Idea
 -----
 Design of system APIs is heavily influenced by [OpenComputers](https://github.com/MightyPirates/OpenComputers) minecraft mod. Some Lua code parts are 
-actually copied from there(all of the code is under the MIT License). Main advantage of the API is that it's event/component based, which provides great 
+actually copied from there (all of the code is under the MIT License). Main advantage of the API is that it's event/component based, which provides great 
 level of abstraction. Custom components can be created and used with very little effort, being event-based simplifies code further, providing one unified 
 queue for events instead of multiple ways of handling them.
 ```lua

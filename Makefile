@@ -1,11 +1,11 @@
 # LuPI2 Makefile
 
 # Default compiler settings.
-PREFIX?=musl-
+PREFIX?=musl
 
-CC = $(PREFIX)gcc
+CC = $(PREFIX)-gcc
 CFLAGS?=-O2 -std=c99
-LDFLAGS+= -static
+LDFLAGS+= -static -Ldependencies/lib-$(PREFIX)
 
 # Project specific stuff
 BUILD = bin/
@@ -13,7 +13,7 @@ SOURCE = src/c
 
 CORELUA = src/lua/core
 RESOURCES = resources
-LIBS=-lm
+LIBS=-lm -lcrypto -lssl
 
 INCLUDES=-I$(SOURCE) -Isrc/c/lib/lua -Iinclude
 

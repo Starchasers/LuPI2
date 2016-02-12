@@ -114,7 +114,6 @@ static int l_read(lua_State *L) {
 static void ssl_init() {
   (void)SSL_library_init();
   SSL_load_error_strings();
-  OPENSSL_config(NULL);
 }
 
 void internet_start(lua_State *L) {

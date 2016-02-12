@@ -39,21 +39,15 @@ rm -rf dependencies/lib-$OUT
 mkdir -p dependencies/lib-$OUT
 
 cd dependencies
-git clone git://git.openssl.org/openssl.git
-cd openssl
-
-#./Configure 
-cd ..
-rm -rf openssl-build
-mkdir openssl-build
-cd openssl-build
-../openssl/Configure $OPENSSL_TARGET --unified no-asm -DOPENSSL_NO_HEARTBEATS --openssldir=$(cd ../lib-$OUT; pwd) no-shared no-threads no-dso
-make libcrypto.a -j8 CC=$TOOL-gcc RANLIB=$TOOL-ranlib LD=$TOOL-ld MAKEDEPPROG=$TOOL-gcc PROCESSOR=ARM
-make libssl.a -j8 CC=$TOOL-gcc RANLIB=$TOOL-ranlib LD=$TOOL-ld MAKEDEPPROG=$TOOL-gcc PROCESSOR=ARM
+git clone https://github.com/libressl-portable/portable.git libressl
+cd libressl
+./autogen.sh
+./configure --host=$TOOL
+make clean
+make -j8
 
 mkdir -p ../include/openssl
 mkdir -p ../include-$OUT/openssl
-cp -rfv ../openssl/include/openssl/* ../include/openssl
+cp -rfv crypto/.libs/libcrypto.a ../lib-$OUT
+cp -rfv ssl/.libs/libssl.a ../lib-$OUT
 cp -rfv include/openssl/* ../include-$OUT/openssl
-cp -rfv libcrypto.a ../lib-$OUT
-cp -rfv libssl.a ../lib-$OUT

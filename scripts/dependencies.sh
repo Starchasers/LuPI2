@@ -7,7 +7,7 @@ OUT=$TOOL
 
 if [ $# -lt 1 ]
 then
-  echo "Usage : $0 [arm32-musl|x86_64|x86_64-musl]"
+  echo "Usage : $0 [arm32-musl|x86_64|musl]"
   exit
 fi
 
@@ -32,6 +32,8 @@ case "$1" in
 esac
 
 mkdir -p dependencies
+mkdir -p dependencies/include
+mkdir -p dependencies/include-$OUT
 
 rm -rf dependencies/lib-$OUT
 mkdir -p dependencies/lib-$OUT
@@ -45,9 +47,13 @@ cd ..
 rm -rf openssl-build
 mkdir openssl-build
 cd openssl-build
-../openssl/Configure $OPENSSL_TARGET --unified no-asm -DOPENSSL_NO_HEARTBEATS --openssldir=$(cd ../lib-$OUT; pwd) no-shared
+../openssl/Configure $OPENSSL_TARGET --unified no-asm -DOPENSSL_NO_HEARTBEATS --openssldir=$(cd ../lib-$OUT; pwd) no-shared no-threads no-dso
 make libcrypto.a -j8 CC=$TOOL-gcc RANLIB=$TOOL-ranlib LD=$TOOL-ld MAKEDEPPROG=$TOOL-gcc PROCESSOR=ARM
 make libssl.a -j8 CC=$TOOL-gcc RANLIB=$TOOL-ranlib LD=$TOOL-ld MAKEDEPPROG=$TOOL-gcc PROCESSOR=ARM
 
-cp libcrypto.a ../lib-$OUT
-cp libssl.a ../lib-$OUT
+mkdir -p ../include/openssl
+mkdir -p ../include-$OUT/openssl
+cp -rfv ../openssl/include/openssl/* ../include/openssl
+cp -rfv include/openssl/* ../include-$OUT/openssl
+cp -rfv libcrypto.a ../lib-$OUT
+cp -rfv libssl.a ../lib-$OUT

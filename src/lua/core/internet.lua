@@ -63,7 +63,7 @@ function internet.start()
   function component.request(url, post)
     checkArg(1, url, "string")
     checkArg(2, post, "string", "nil")
-    local host, uri = url:match("http://([^/]+)([^#]+)")
+    local host, uri = url:match("https?://([^/]+)([^#]+)")
     if not host then native.log("internet.request host match error: " .. url .. "\n") end
     local socket = component.connect(host, 80)
     if socket.finishConnect() then

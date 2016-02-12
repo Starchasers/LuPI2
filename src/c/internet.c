@@ -16,6 +16,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
+#include <openssl/ssl.h>
+#include <openssl/conf.h>
 
 static int l_open(lua_State *L) { //TODO: Any mem leaks?
   const char* hostaddr = lua_tostring(L, 1);
@@ -109,7 +111,14 @@ static int l_read(lua_State *L) {
   return 1;
 }
 
+static void ssl_init() {
+  (void)SSL_library_init();
+  SSL_load_error_strings();
+  OPENSSL_config(NULL);
+}
+
 void internet_start(lua_State *L) {
+  ssl_init();
   signal(SIGPIPE, SIG_IGN);
 
   lua_createtable (L, 0, 1);

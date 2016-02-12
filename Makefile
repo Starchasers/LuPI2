@@ -13,9 +13,9 @@ SOURCE = src/c
 
 CORELUA = src/lua/core
 RESOURCES = resources
-LIBS=-lm -lcrypto -lssl
+LIBS=-lm -lssl -lcrypto
 
-INCLUDES=-I$(SOURCE) -Isrc/c/lib/lua -Iinclude
+INCLUDES=-I$(SOURCE) -Isrc/c/lib/lua -Iinclude -Idependencies/include -Idependencies/include-$(PREFIX)
 
 GENERATED=include/luares.h src/c/gen/luares.c include/res.h src/c/gen/res.c
 LUAPARAMS = $(CORELUA) include/luares.h src/c/gen/luares.c lua_

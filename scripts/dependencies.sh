@@ -1,32 +1,39 @@
 #!/bin/bash
 #TOOL=arm-musl-linuxeabihf
-TOOL=x86_64-unknown-linux-gnu
-OPENSSL_TARGET=linux-generic32
+TOOL=x86_64-linux-musl
+OPENSSL_TARGET=linux-generic64
 OUT=$TOOL
-# TODO: more targets / host target / musl target from host
+# TODO: more targets / host target
 
 if [ $# -lt 1 ]
 then
-  echo "Usage : $0 [arm32-musl|x86_64|musl]"
+  echo "Usage : $0 [all|arm32|x86_64|i486]"
   exit
 fi
 
 case "$1" in
-  arm32-musl )
+  all )
+    TARGETS=(arm32 i486 x86_64)
+    for i in ${TARGETS[@]}; do
+      ./$0 $i
+    done
+    ;;
+  arm32 )
     TOOL=arm-linux-musleabihf
     OUT=$TOOL
     OPENSSL_TARGET=linux-generic32
     ;;
+  i486 )
+    TOOL=i486-linux-musl
+    OUT=$TOOL
+    OPENSSL_TARGET=linux-generic32
+    ;;
   x86_64 )
-    TOOL=x86_64-unknown-linux-gnu
+    TOOL=x86_64-linux-musl
     OUT=$TOOL
     OPENSSL_TARGET=linux-generic64
     ;;
-  musl )
-    TOOL=x86_64-unknown-linux-gnu
-    OUT=musl
-    OPENSSL_TARGET=linux-generic64
-    ;;
+    
   *) echo "Invalid target!" ; exit 1
     ;;
 esac

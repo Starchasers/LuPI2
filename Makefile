@@ -1,7 +1,7 @@
 # LuPI2 Makefile
 
 # Default compiler settings.
-PREFIX?=musl
+PREFIX?=x86_64-linux-musl
 
 CC = $(PREFIX)-gcc
 CFLAGS?=-O2 -std=c99

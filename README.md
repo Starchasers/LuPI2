@@ -6,9 +6,9 @@ intuitive languages. It has only 6 types, very simple syntax, yet supports many 
 Build
 -----
 1. Clone this repository
-2. Get musl libc (with musl-gcc wrapper), or compile musl cross compiler(like arm-linux-musleabihf)
+2. Get musl cross compiler(like arm-linux-musleabihf), simplest way is to use [musl-cross](https://github.com/GregorR/musl-cross)
 3. Get `xxd` utility (usually packaged with vim)
-4. Build dependencies using scripts/dependencies.sh script
+4. Build dependencies using scripts/dependencies.sh script for your platform(s)
 5. Execute `make build`
 6. You will need to put some OS to `root` directory where you run the binary. For now you can get plan9k at https://cloud.magik6k.net/index.php/s/7jPRAU037dzt8Ga/download
 

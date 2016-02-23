@@ -51,7 +51,7 @@ gpio.register = function ()
     checkArg(1, pin, "number")
     checkArg(2, pin, "boolean", "number", "nil")
     pin = tostring(math.floor(pin))
-    value = (value == true or value > 0) and "1" or "0"
+    value = (value == true or (type(value) == "number" and value & 1 == 1) ) and "1" or "0"
     if not fexists("/sys/class/gpio/gpio" .. pin) then
       return false, "Set pin mode first"
     end

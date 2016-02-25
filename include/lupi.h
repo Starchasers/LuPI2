@@ -15,9 +15,7 @@ void logm(const char *message);
   #define logm(m)
 #endif
 
-/* TODO: move to utils */
 #define pushstuple(state, name, value) lua_pushstring((state), (name)); lua_pushstring((state), (value));    lua_settable((state), -3)
-#define pushctuple(state, name, value) lua_pushstring((state), (name)); lua_pushcfunction((state), (value)); lua_settable((state), -3)
 
 lua_State* getL();
 

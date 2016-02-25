@@ -50,10 +50,12 @@ void termutils_start(lua_State *L) {
   new.c_cflag &= ~(CSIZE | PARENB);
   new.c_cflag |= CS8;
 
-  lua_createtable (L, 0, 1);
-  pushctuple(L, "getSize", l_get_term_sz);
-  pushctuple(L, "init", l_term_init);
-  pushctuple(L, "restore", l_term_restore);
-  
-  lua_setglobal(L, "termutils");
+  struct luaL_Reg termlib[] = {
+    {"getSize", l_get_term_sz},
+    {"init", l_term_init},
+    {"restore", l_term_restore},
+    {NULL, NULL}
+  };
+  luaL_openlib(L, "termutils", termlib, 0);
+
 }

@@ -378,8 +378,14 @@ static int l_towlower (lua_State *L) {
   return 1;
 }
 
+#ifdef DEBUG
+static int l_debug (lua_State *L) {
+  return 0;
+}
+#endif
+
 void luanative_start(lua_State *L) {
-  lua_createtable (L, 0, 1);
+  /*lua_createtable (L, 0, 1);
   
   pushctuple(L, "sleep", l_sleep);
   pushctuple(L, "log", l_log);
@@ -414,7 +420,39 @@ void luanative_start(lua_State *L) {
     lua_pushstring(L, "debug");
     lua_pushboolean(L, 1);
     lua_settable(L, -3);
-  #endif
+  #endif*/
 
-  lua_setglobal(L, "native");
+  struct luaL_Reg nativelib[] = {
+    {"sleep", l_sleep},
+    {"log", l_log},
+    {"fs_exists", l_fs_exists},
+    {"fs_mkdir", l_fs_mkdir},
+    {"fs_isdir", l_fs_isdir},
+    {"fs_spaceUsed", l_fs_spaceUsed},
+    {"fs_open", l_fs_open},
+    {"fs_seek", l_fs_seek},
+    {"fs_write", l_fs_write},
+    {"fs_spaceTotal", l_fs_spaceTotal},
+    {"fs_rename", l_fs_rename},
+    {"fs_list", l_fs_list},
+    {"fs_lastModified", l_fs_lastModified},
+    {"fs_remove", l_fs_remove},
+    {"fs_close", l_fs_close},
+    {"fs_size", l_fs_size},
+    {"fs_read", l_fs_read},
+    {"wcwidth", l_wcwidth},
+    {"towlower", l_towlower},
+    {"towupper", l_towupper},
+    {"beep", l_beep},
+    {"uptime", l_uptime},
+    {"totalMemory", l_totalMemory},
+    {"freeMemory", l_freeMemory},
+    {"pull", l_pull},
+    #ifdef DEBUG
+      {"debug", l_debug},
+    #endif
+    {NULL, NULL}
+  };
+
+  luaL_openlib(L, "native", nativelib, 0);
 }

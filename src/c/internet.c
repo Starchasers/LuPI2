@@ -199,11 +199,11 @@ void internet_start(lua_State *L) {
   ssl_init();
   signal(SIGPIPE, SIG_IGN);
 
-  lua_createtable (L, 0, 1);
-
-  pushctuple(L, "open", l_open);
-  pushctuple(L, "write", l_write);
-  pushctuple(L, "read", l_read);
-
-  lua_setglobal(L, "net");
+  struct luaL_Reg netlib[] = {
+    {"open", l_open},
+    {"write", l_write},
+    {"read", l_read},
+    {NULL, NULL}
+  };
+  luaL_openlib(L, "net", netlib, 0);
 }

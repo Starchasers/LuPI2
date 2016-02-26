@@ -130,7 +130,7 @@ function filesystem.register(basePath, uuid)
     return native.fs_lastModified(realpath(path))
   end
   function fs.getLabel()
-    return path --TODO: Implement, use real labels
+    return basePath --TODO: Implement, use real labels
   end
   function fs.remove(path) --TODO: TEST!!
     checkArg(1, path, "string")

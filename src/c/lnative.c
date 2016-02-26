@@ -359,7 +359,7 @@ static int l_freeMemory (lua_State *L) {
 }
 
 static int l_pull (lua_State *L) {
-  lua_pushnumber(L, epoll_pull(lua_tonumber(L, 1)));
+  lua_pushnumber(L, event_pull(lua_tonumber(L, 1)));
   return 1;
 }
 

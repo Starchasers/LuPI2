@@ -25,14 +25,7 @@ void luanative_start(lua_State *L);
 void setup_modules(lua_State *L);
 void termutils_start(lua_State *L);
 void internet_start(lua_State *L);
-void epoll_prepare();
-int epoll_pull(int timeout);
-
-struct lupi_event_handler {
-  int (*handler)(int, void*); /* FD, data, return number of pushed events */
-  /* TODO: doc? */
-  int fd;
-  void* data;
-};
+void event_prepare();
+int event_pull(int timeout);
 
 #endif

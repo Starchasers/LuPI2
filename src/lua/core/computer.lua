@@ -135,7 +135,7 @@ function api.pullSignal(timeout)
   local nevts = 0
   repeat
     nevts = native.pull(timeout)
-  until nevts > 0 or native.uptime() > timeoutuptime
+  until nevts > 0 or native.uptime() >= timeoutuptime
   if signalQueue[1] then
     native.log("pullSignal native: " .. signalQueue[1][1])
     return table.unpack(table.remove(signalQueue, 1))

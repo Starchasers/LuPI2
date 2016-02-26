@@ -29,7 +29,7 @@ void run_init() {
   luanative_start (L);
   internet_start  (L);
   termutils_start (L);
-  epoll_prepare();
+  event_prepare();
 
   /* int status = luaL_loadstring(L, lua_init); */
   int status = luaL_loadbuffer(L, lua_init, strlen(lua_init), "=INIT");

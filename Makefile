@@ -13,7 +13,7 @@ SOURCE = src/c
 
 CORELUA = src/lua/core
 RESOURCES = resources
-LIBS=-lm -lssl -lcrypto
+LIBS=-lm -lssl -lcrypto -levent_core
 
 INCLUDES=-I$(SOURCE) -Isrc/c/lib/lua -Iinclude -Idependencies/include -Idependencies/include-$(PREFIX)
 

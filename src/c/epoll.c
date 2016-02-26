@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <event2/event.h>
+
 static int epollfd;
 
 static int handleStdin(int fd, void* data) {

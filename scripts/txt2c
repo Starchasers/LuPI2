@@ -23,9 +23,11 @@ generate() {
 		filename="$(basename "$file")"
         if [ -d "$file" ]
 		then
+			echo "Enter directory $file"
 			generate $file $2 $3 ${PREFIX}${filename}_
 		else
 			filename="${filename%.*}"
+			echo "Generate $PREFIX$filename"
 			echo "extern char $PREFIX$filename[];"    >> "$OUTPUTH"
 
 

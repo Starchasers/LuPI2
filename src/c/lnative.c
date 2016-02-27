@@ -385,42 +385,6 @@ static int l_debug (lua_State *L) {
 #endif
 
 void luanative_start(lua_State *L) {
-  /*lua_createtable (L, 0, 1);
-  
-  pushctuple(L, "sleep", l_sleep);
-  pushctuple(L, "log", l_log);
-
-  pushctuple(L, "fs_exists", l_fs_exists);
-  pushctuple(L, "fs_mkdir", l_fs_mkdir);
-  pushctuple(L, "fs_isdir", l_fs_isdir);
-  pushctuple(L, "fs_spaceUsed", l_fs_spaceUsed);
-  pushctuple(L, "fs_open", l_fs_open);
-  pushctuple(L, "fs_seek", l_fs_seek);
-  pushctuple(L, "fs_write", l_fs_write);
-  pushctuple(L, "fs_spaceTotal", l_fs_spaceTotal);
-  pushctuple(L, "fs_rename", l_fs_rename);
-  pushctuple(L, "fs_list", l_fs_list);
-  pushctuple(L, "fs_lastModified", l_fs_lastModified);
-  pushctuple(L, "fs_remove", l_fs_remove);
-  pushctuple(L, "fs_close", l_fs_close);
-  pushctuple(L, "fs_size", l_fs_size);
-  pushctuple(L, "fs_read", l_fs_read);
-
-  pushctuple(L, "wcwidth", l_wcwidth);
-  pushctuple(L, "towlower", l_towlower);
-  pushctuple(L, "towupper", l_towupper);
-
-  pushctuple(L, "beep", l_beep);
-  pushctuple(L, "uptime", l_uptime);
-  pushctuple(L, "totalMemory", l_totalMemory);
-  pushctuple(L, "freeMemory", l_freeMemory);
-  pushctuple(L, "pull", l_pull);
-
-  #ifdef DEBUG
-    lua_pushstring(L, "debug");
-    lua_pushboolean(L, 1);
-    lua_settable(L, -3);
-  #endif*/
 
   struct luaL_Reg nativelib[] = {
     {"sleep", l_sleep},

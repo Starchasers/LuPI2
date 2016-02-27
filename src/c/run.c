@@ -21,7 +21,6 @@ lua_State* getL() {
 }
 
 void run_init() {
-  lupi_init();
   L = luaL_newstate();
 
   luaL_openlibs   (L);
@@ -31,7 +30,6 @@ void run_init() {
   termutils_start (L);
   event_prepare();
 
-  /* int status = luaL_loadstring(L, lua_init); */
   int status = luaL_loadbuffer(L, lua_init, strlen(lua_init), "=INIT");
   if (status) {
     fprintf(stderr, "Couldn't load init: %s\n", lua_tostring(L, -1));

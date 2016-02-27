@@ -4,7 +4,6 @@
 #ifndef LUPI_H
 #define LUPI_H
 
-/* #define LOGGING */
 #ifdef LOGGING
 void logn(const char *message);
 void logi(int message);
@@ -15,7 +14,7 @@ void logm(const char *message);
   #define logm(m)
 #endif
 
-#define pushstuple(state, name, value) lua_pushstring((state), (name)); lua_pushstring((state), (value));    lua_settable((state), -3)
+#define pushstuple(state, name, value) lua_pushstring((state), (name)); lua_pushstring((state), (value)); lua_settable((state), -3)
 
 lua_State* getL();
 

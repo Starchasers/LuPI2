@@ -27,20 +27,35 @@ BUILDDIRECTORIES = $(patsubst $(SOURCE)/%, $(BUILD)%, $(SRCDIRECTORIES))
 CFILES = $(shell find $(SOURCE) -type f -name '*.c')
 OBJECTS :=	$(patsubst $(SOURCE)/%.c, $(BUILD)%.c.o, $(CFILES))
 
+OUTNAME = lupi
+
 # Targets
 
 # Pseudo Targets
 debug: CFLAGS+= -g -DLOGGING -DDEBUG
 debug: build
 
+winexe: $(BUILD)$(OUTNAME)
+	cp $(BUILD)$(OUTNAME) $(BUILD)$(OUTNAME).exe
+
+
+win: LIBS+= -lws2_32
+win: all winexe
+
+win-build: LIBS+= -lws2_32
+win-build: build winexe
+
+win-debug: LIBS+= -lws2_32
+win-debug: debug winexe
+
 $(BUILDDIRECTORIES):
 	mkdir -p $@
 
-build: smallclean $(BUILDDIRECTORIES) resources $(BUILD)lupi
+build: smallclean $(BUILDDIRECTORIES) resources $(BUILD)$(OUTNAME)
 
 all: clean build
 
-$(BUILD)lupi: $(OBJECTS)
+$(BUILD)$(OUTNAME): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
 
 $(BUILD)%.c.o: $(SOURCE)/%.c

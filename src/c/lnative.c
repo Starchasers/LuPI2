@@ -4,10 +4,14 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#ifndef _WIN32
 #include <sys/ioctl.h>
+#include <sys/statvfs.h>
+#else
+#include <windows.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/statvfs.h>
 #include <sys/time.h>
 #include <string.h>
 #include <stdlib.h>
@@ -99,7 +103,11 @@ static int l_fs_exists (lua_State *L) {
 
 static int l_fs_mkdir (lua_State *L) {
   const char* fname = lua_tostring(L, 1);
+#ifndef _WIN32
   if( mkdir( fname, 0755 ) != -1 ) {
+#else
+    if( mkdir( fname ) != -1 ) {
+#endif
     lua_pushboolean(L, 1);
   } else {
     lua_pushboolean(L, 0);
@@ -125,12 +133,16 @@ static int l_fs_isdir (lua_State *L) {
 
 static int l_fs_spaceUsed (lua_State *L) {
   const char* fname = lua_tostring(L, 1);
+#ifndef _WIN32
   struct statvfs s;
   if( statvfs(fname, &s) != -1 ) {
     lua_pushnumber(L, s.f_bsize * s.f_bfree);
   } else {
     lua_pushnumber(L, -1);
   }
+#else
+  lua_pushnumber(L, -1);
+#endif
   return 1;
 }
 
@@ -186,12 +198,16 @@ static int l_fs_write (lua_State *L) {
 
 static int l_fs_spaceTotal (lua_State *L) {
   const char* fname = lua_tostring(L, 1);
+#ifndef _WIN32
   struct statvfs s;
   if( statvfs(fname, &s) != -1 ) {
     lua_pushnumber(L, s.f_frsize * s.f_blocks);
   } else {
     lua_pushnumber(L, -1);
   }
+#else
+  lua_pushnumber(L, -1);
+#endif
   return 1;
 }
 
@@ -319,6 +335,7 @@ static int l_fs_read (lua_State *L) {
 static int l_beep (lua_State *L) {
   int freq = lua_tonumber(L, 1);
   int btime = lua_tonumber(L, 2);
+#ifndef _WIN32
   int console_fd = -1;
 
   if((console_fd = open("/dev/console", O_WRONLY)) == -1) {
@@ -334,6 +351,7 @@ static int l_beep (lua_State *L) {
   usleep(1000 * btime);
   ioctl(console_fd, KIOCSOUND, 0);
   close(console_fd);
+#endif /* TODO win32 implementation */
   return 0;
 }
 
@@ -345,16 +363,40 @@ static int l_uptime (lua_State *L) { /* Return ms */
 }
 
 static int l_totalMemory (lua_State *L) {
+#if defined(_WIN32) && (defined(__CYGWIN__) || defined(__CYGWIN32__))
+  MEMORYSTATUS status;
+  status.dwLength = sizeof(status);
+  GlobalMemoryStatus( &status );
+  lua_pushnumber(L, status.dwTotalPhys);
+#elif defined(_WIN32)
+  MEMORYSTATUSEX status;
+  status.dwLength = sizeof(status);
+  GlobalMemoryStatusEx( &status );
+  lua_pushnumber(L, (size_t)status.ullTotalPhys);
+#else
   long pages = sysconf(_SC_PHYS_PAGES);
   long page_size = sysconf(_SC_PAGE_SIZE);
   lua_pushnumber(L, pages * page_size);
+#endif
   return 1;
 }
 
 static int l_freeMemory (lua_State *L) {
+#if defined(_WIN32) && (defined(__CYGWIN__) || defined(__CYGWIN32__))
+  MEMORYSTATUS status;
+  status.dwLength = sizeof(status);
+  GlobalMemoryStatus( &status );
+  lua_pushnumber(L, status.dwAvailPhys);
+#elif defined(_WIN32)
+  MEMORYSTATUSEX status;
+  status.dwLength = sizeof(status);
+  GlobalMemoryStatusEx( &status );
+  lua_pushnumber(L, (size_t)status.ullAvailPhys);
+#else
   long pages = sysconf(_SC_AVPHYS_PAGES);
   long page_size = sysconf(_SC_PAGE_SIZE);
   lua_pushnumber(L, pages * page_size);
+#endif
   return 1;
 }
 
@@ -375,6 +417,15 @@ static int l_towupper (lua_State *L) {
 
 static int l_towlower (lua_State *L) {
   lua_pushnumber(L, towlower(lua_tonumber(L, 1)));
+  return 1;
+}
+
+static int l_platform (lua_State *L) { /* returns platform identifiers separated by | */
+#ifndef _WIN32
+  lua_pushstring(L, "unix|linux|other");
+#else
+  lua_pushstring(L, "windows");
+#endif
   return 1;
 }
 
@@ -412,6 +463,7 @@ void luanative_start(lua_State *L) {
     {"totalMemory", l_totalMemory},
     {"freeMemory", l_freeMemory},
     {"pull", l_pull},
+    {"platform", l_platform},
     #ifdef DEBUG
       {"debug", l_debug},
     #endif

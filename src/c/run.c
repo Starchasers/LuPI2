@@ -8,7 +8,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/statvfs.h>
+//#include <sys/statvfs.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>

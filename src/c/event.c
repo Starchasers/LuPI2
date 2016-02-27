@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifdef _WIN32
+  #define WIN32
+#endif
+
 #include <event2/event.h>
 #include <event2/event_struct.h>
 

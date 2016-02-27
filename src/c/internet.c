@@ -9,15 +9,21 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h> 
 #include <strings.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
 #include <openssl/ssl.h>
 #include <openssl/conf.h>
+
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+#else
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <netdb.h>
+#endif
 
 SSL_CTX* ctx = NULL;
 
@@ -54,8 +60,12 @@ static int l_open(lua_State *L) { /* TODO: Any mem leaks? */
       close(sockfd);
       continue;
     }
-
+#ifdef _WIN32
+    u_long blockmode = 1;
+    ioctlsocket(sockfd,FIONBIO,&blockmode);
+#else
     fcntl(sockfd, F_SETFL, O_NONBLOCK);
+#endif
     break;
   }
 
@@ -197,8 +207,15 @@ static void ssl_init() {
 
 void internet_start(lua_State *L) {
   ssl_init();
+#ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
-
+#else
+  WSADATA wd;
+  if(WSAStartup(MAKEWORD(2,2), &wd)!=0) {
+    WSACleanup();
+    exit(1);
+  }
+#endif
   struct luaL_Reg netlib[] = {
     {"open", l_open},
     {"write", l_write},

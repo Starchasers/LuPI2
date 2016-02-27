@@ -7,13 +7,13 @@ OUT=$TOOL
 
 if [ $# -lt 1 ]
 then
-  echo "Usage : $0 [all|arm32|x86_64|i486] <libevent|libressl>"
+  echo "Usage : $0 [all|arm32|x86_64|i486|x86_64-win|i686-win] <libevent|libressl>"
   exit
 fi
 
 case "$1" in
   all )
-    TARGETS=(arm32 i486 x86_64)
+    TARGETS=(arm32 i486 x86_64 x86_64-win i686-win)
     for i in ${TARGETS[@]}; do
       ./$0 $i $2
     done
@@ -21,19 +21,23 @@ case "$1" in
   arm32 )
     TOOL=arm-linux-musleabihf
     OUT=$TOOL
-    OPENSSL_TARGET=linux-generic32
     ;;
   i486 )
     TOOL=i486-linux-musl
     OUT=$TOOL
-    OPENSSL_TARGET=linux-generic32
     ;;
   x86_64 )
     TOOL=x86_64-linux-musl
     OUT=$TOOL
-    OPENSSL_TARGET=linux-generic64
     ;;
-    
+  x86_64-win )
+    TOOL=x86_64-w64-mingw32
+    OUT=$TOOL
+    ;;
+  i686-win )
+    TOOL=i686-w64-mingw32
+    OUT=$TOOL
+    ;;
   *) echo "Invalid target!" ; exit 1
     ;;
 esac

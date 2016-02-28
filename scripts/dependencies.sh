@@ -7,7 +7,7 @@ OUT=$TOOL
 
 if [ $# -lt 1 ]
 then
-  echo "Usage : $0 [all|arm32|x86_64|i486|x86_64-win|i686-win] <libevent|libressl>"
+  echo "Usage : $0 [all|arm32|x86_64|i486|x86_64-win|i686-win] <libevent|libressl|lua>"
   exit
 fi
 
@@ -65,7 +65,7 @@ if [ $2 = "libressl" ] || [ $# -lt 2 ]; then
 
   mkdir -p ../include/openssl
   mkdir -p ../include-$OUT/openssl
-  cp -rfv crypto/.libs/libcrypto.a ../lib-$OUT
+  cp -fv crypto/.libs/libcrypto.a ../lib-$OUT
   cp -rfv ssl/.libs/libssl.a ../lib-$OUT
   cp -rfv include/openssl/* ../include-$OUT/openssl
 
@@ -93,9 +93,31 @@ if [ $2 = "libevent" ] || [ $# -lt 2 ]; then
   mkdir -p ../include/event2
   mkdir -p ../include-$OUT/event2
   cp -rfv include/event2/* ../include-$OUT/event2
-  cp -rfv .libs/libevent.a ../lib-$OUT
-  cp -rfv .libs/libevent_core.a ../lib-$OUT
-  cp -rfv .libs/libevent_extra.a ../lib-$OUT
-  cp -rfv .libs/libevent_pthreads.a ../lib-$OUT
+  cp -rv .libs/libevent.a ../lib-$OUT
+  cp -fv .libs/libevent_core.a ../lib-$OUT
+  cp -fv .libs/libevent_extra.a ../lib-$OUT
+  cp -fv .libs/libevent_pthreads.a ../lib-$OUT
+
+  cd ..
+
+fi
+
+#################
+# Lua
+
+if [ $2 = "lua" ] || [ $# -lt 2 ]; then
+
+  if [ ! -f "lua-5.3.2.tar.gz" ]; then
+      wget "http://www.lua.org/ftp/lua-5.3.2.tar.gz"
+      tar xzvf "lua-5.3.2.tar.gz"
+  fi
+
+  cd lua-5.3.2
+
+  make clean
+  make generic MYCFLAGS=-DLUA_COMPAT_MODULE CC=$TOOL-gcc RANLIB=$TOOL-ranlib #AR=$TOOL-ar
+
+  cp src/liblua.a ../lib-$OUT
+  cp src/*.h ../include-$OUT
 
 fi

@@ -5,6 +5,7 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#ifndef _WIN32
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -391,11 +392,6 @@ static int l_get_height (lua_State *L) {
   return 1;
 }
 
-static int l_fb_ready (lua_State *L) {
-  lua_pushboolean(L, fb_ready);
-  return 1;
-}
-
 static int l_fb_getbg (lua_State *L) {
   int x = lua_tonumber(L, 1);
   int y = lua_tonumber(L, 2);
@@ -429,7 +425,19 @@ static int l_fb_get (lua_State *L) {
   return 1;
 }
 
+#endif
+
+static int l_fb_ready (lua_State *L) {
+#ifndef _WIN32
+  lua_pushboolean(L, fb_ready);
+#else
+  lua_pushboolean(L, 0);
+#endif
+  return 1;
+}
+
 void fb_start(lua_State *L) {
+#ifndef _WIN32
    fb_file = open("/dev/fb0", O_RDWR);
    if (fb_file == -1) {
      printf("Error: cannot open framebuffer device");
@@ -484,18 +492,22 @@ void fb_start(lua_State *L) {
 
   fb_ready = 1;
 
+#endif
+
   struct luaL_Reg fblib[] = {
+#ifndef _WIN32
     {"setPalette", l_set_palette},
     {"getWidth", l_get_width},
     {"getHeight", l_get_height},
     {"put", l_fbput},
     {"copy", l_fbcopy},
     {"fill", l_fbfill},
-    {"isReady", l_fb_ready},
     {"getBackground", l_fb_getbg},
     {"getForeground", l_fb_getfg},
     {"get", l_fb_get},
     {"getNearest", l_get_nearest},
+#endif
+    {"isReady", l_fb_ready},
     {NULL, NULL}
   };
 

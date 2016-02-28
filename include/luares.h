@@ -8,6 +8,7 @@ extern char lua_eeprom[];
 extern char lua_fbgpu[];
 extern char lua_filesystem[];
 extern char lua_gpio[];
+extern char lua_gpudetect[];
 extern char lua_init[];
 extern char lua_internet[];
 extern char lua_sandbox[];

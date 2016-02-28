@@ -429,6 +429,19 @@ static int l_platform (lua_State *L) { /* returns platform identifiers separated
   return 1;
 }
 
+static int l_isinit (lua_State *L) {
+#ifndef _WIN32
+  lua_pushboolean(L, 0);
+#else
+  if(getpid() == 1) {
+    lua_pushboolean(L, 1);
+  } else {
+    lua_pushboolean(L, 0);
+  }
+#endif
+  return 1;
+}
+
 #ifdef DEBUG
 static int l_debug (lua_State *L) {
   return 0;
@@ -464,6 +477,7 @@ void luanative_start(lua_State *L) {
     {"freeMemory", l_freeMemory},
     {"pull", l_pull},
     {"platform", l_platform},
+    {"isinit", l_isinit},
     #ifdef DEBUG
       {"debug", l_debug},
     #endif

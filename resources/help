@@ -1,0 +1,5 @@
+Usage: lupi [options]
+
+  -h, --help    This help
+  -f, --fb      Force framebuffer rendering
+  -t, --text    Force text mode rendering

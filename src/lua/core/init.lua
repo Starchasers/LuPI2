@@ -15,6 +15,27 @@ function checkArg(n, have, ...)
 end
 
 -------------------------------------------------------------------------------
+
+local argv = {...}
+function hasOpt(o, n, ...)
+  for _, v in pairs(argv) do
+    if v == o then
+      return true
+    end
+  end
+  if n then
+    return hasOpt(n, ...)
+  end
+  return false
+end
+
+if hasOpt("-h", "--help") then
+  print(moduleCode.help)
+  os.exit(0)
+end
+
+-------------------------------------------------------------------------------
+
 math.randomseed(native.uptime())--TODO: Make it better?
 
 lprint = function (...)
@@ -26,7 +47,10 @@ lprint("LuPI L1 INIT")
 modules = {}
 deadhooks = {}
 
-local function loadModule(name)
+function loadModule(name)
+  if modules[name] then
+    return
+  end
   lprint("LuPI L1 INIT > Load module > " .. name)
   io.flush()
   --TODO: PRERELEASE: Module sandboxing, preferably secure-ish
@@ -63,11 +87,7 @@ function main()
   loadModule("eeprom")
   loadModule("gpio")
 
-  if framebuffer.isReady() then
-    loadModule("fbgpu")
-  else
-    loadModule("textgpu")
-  end
+  loadModule("gpudetect")
   loadModule("filesystem")
   loadModule("internet")
 
@@ -89,14 +109,7 @@ function main()
   end
   modules.computer.tmp = modules.filesystem.register("/tmp/lupi-" .. modules.random.uuid())
 
-  if framebuffer.isReady() then
-    modules.fbgpu.start()
-  else
-    local textgpuAddr, tgfail = modules.textgpu.start()
-    if not textgpuAddr then
-      lprint("Couldn't initialize text gpu: " .. tostring(tgfail))
-    end
-  end
+  modules.gpudetect.run()
 
   if native.debug then
     modules.debug.hook()

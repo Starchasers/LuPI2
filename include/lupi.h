@@ -20,7 +20,7 @@ typedef unsigned short ushort;
 
 lua_State* getL();
 
-void run_init();
+void run_init(int argc, char **argv);
 void lupi_init();
 void luanative_start(lua_State *L);
 void fb_start(lua_State *L);

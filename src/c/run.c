@@ -20,7 +20,7 @@ lua_State* getL() {
   return L;
 }
 
-void run_init() {
+void run_init(int argc, char **argv) {
   L = luaL_newstate();
 
   luaL_openlibs   (L);
@@ -36,6 +36,9 @@ void run_init() {
     fprintf(stderr, "Couldn't load init: %s\n", lua_tostring(L, -1));
     exit(1);
   }
-  lua_call(L, 0, 0);
+  for(int i = 0; i < argc; i++) {
+    lua_pushstring(L, argv[i]);
+  }
+  lua_call(L, argc, 0);
   lua_close(L);
 }

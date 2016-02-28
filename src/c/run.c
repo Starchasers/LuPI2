@@ -8,7 +8,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/statvfs.h>
+//#include <sys/statvfs.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -21,7 +21,6 @@ lua_State* getL() {
 }
 
 void run_init() {
-  lupi_init();
   L = luaL_newstate();
 
   luaL_openlibs   (L);
@@ -30,9 +29,8 @@ void run_init() {
   internet_start  (L);
   fb_start        (L);
   termutils_start (L);
-  epoll_prepare();
+  event_prepare();
 
-  /* int status = luaL_loadstring(L, lua_init); */
   int status = luaL_loadbuffer(L, lua_init, strlen(lua_init), "=INIT");
   if (status) {
     fprintf(stderr, "Couldn't load init: %s\n", lua_tostring(L, -1));

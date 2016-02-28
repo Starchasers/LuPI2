@@ -84,7 +84,7 @@ function main()
   modules.gpio.register()
   modules.internet.start()
   modules.filesystem.register("root")
-  if native.debug then
+  if native.debug and native.platform():match("unix") then
     modules.filesystem.register("/", "11111111-1111-1111-1111-111111111111")
   end
   modules.computer.tmp = modules.filesystem.register("/tmp/lupi-" .. modules.random.uuid())
@@ -92,7 +92,10 @@ function main()
   if framebuffer.isReady() then
     modules.fbgpu.start()
   else
-    modules.textgpu.start()
+    local textgpuAddr, tgfail = modules.textgpu.start()
+    if not textgpuAddr then
+      lprint("Couldn't initialize text gpu: " .. tostring(tgfail))
+    end
   end
 
   if native.debug then

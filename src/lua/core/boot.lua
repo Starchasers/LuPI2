@@ -2,6 +2,11 @@ local boot = {}
 
 function boot.boot()
   local gpu = modules.component.api.proxy(modules.component.api.list("gpu", true)())
+  if not gpu then
+    gpu = setmetatable({}, {__index = function()
+      return function() return 0, 0 end
+    end})
+  end
   local w, h = gpu.getResolution()
 
   local function bsod(...)

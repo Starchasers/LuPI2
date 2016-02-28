@@ -245,7 +245,9 @@ function textgpu.start()
     return screenAddr
   end
 
-  termutils.init()
+  if not termutils.init() then
+    return nil, "Cannot initialize terminal based gpu"
+  end
   write("\x1b[?25l") --Disable cursor
   local w, h = gpu.getResolution()
   _height = h
@@ -253,7 +255,7 @@ function textgpu.start()
   gpu.setForeground(0xFFFFFF)
   gpu.setBackground(0x000000)
 
-  modules.component.api.register(nil, "gpu", gpu)
+  local gpuaddr = modules.component.api.register(nil, "gpu", gpu)
   screenAddr = modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
   modules.component.api.register("TODO:SetThisUuid", "keyboard", {})
 
@@ -262,6 +264,8 @@ function textgpu.start()
     io.flush()
     termutils.restore()
   end
+
+  return gpuaddr
 end
 
 return textgpu

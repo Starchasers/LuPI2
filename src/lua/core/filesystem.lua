@@ -57,7 +57,7 @@ function filesystem.register(basePath, uuid)
     native.fs_mkdir(basePath)
   end
   if not native.fs_isdir(basePath) then
-    error("Filesystem root is not a directory!")
+    error("Filesystem root is not a directory! (basePath=".. tostring(basePath) ..")")
   end
   local function realpath(path)
     checkArg(1, path, "string")
@@ -130,7 +130,7 @@ function filesystem.register(basePath, uuid)
     return native.fs_lastModified(realpath(path))
   end
   function fs.getLabel()
-    return path --TODO: Implement, use real labels
+    return basePath --TODO: Implement, use real labels
   end
   function fs.remove(path) --TODO: TEST!!
     checkArg(1, path, "string")

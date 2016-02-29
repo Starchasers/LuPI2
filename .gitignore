@@ -2,3 +2,9 @@
 *.o
 /bin
 /src/c/gen
+/dependencies
+/lupi.log
+/usereepromdata.lua
+/usereeprom.lua
+/run
+/root*

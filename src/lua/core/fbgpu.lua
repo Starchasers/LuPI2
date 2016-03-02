@@ -91,7 +91,7 @@ function fbgpu.start()
     return fb.getWidth(), fb.getHeight()
   end
   function gpu.getViewport()
-    return termutils.getSize()
+    return fb.getWidth(), fb.getHeight()
   end
   function gpu.setViewport(w, h)
     checkArg(1, w, "number")

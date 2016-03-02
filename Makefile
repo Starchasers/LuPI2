@@ -39,13 +39,13 @@ winexe: $(BUILD)$(OUTNAME)
 	cp $(BUILD)$(OUTNAME) $(BUILD)$(OUTNAME).exe
 
 
-win: LIBS+= -lws2_32
+win: LIBS+= -lws2_32 -lgdi32
 win: all winexe
 
-win-build: LIBS+= -lws2_32
+win-build: LIBS+= -lws2_32 -lgdi32
 win-build: build winexe
 
-win-debug: LIBS+= -lws2_32
+win-debug: LIBS+= -lws2_32 -lgdi32
 win-debug: debug winexe
 
 $(BUILDDIRECTORIES):

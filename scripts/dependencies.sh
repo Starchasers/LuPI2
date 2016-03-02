@@ -59,7 +59,7 @@ if [ $2 = "libressl" ] || [ $# -lt 2 ]; then
   git clone https://github.com/libressl-portable/portable.git libressl
   cd libressl
   ./autogen.sh
-  ./configure --host=$TOOL
+  CFLAGS="-fdata-sections -ffunction-sections" ./configure --host=$TOOL
   make clean
   make -j8
 
@@ -86,7 +86,7 @@ if [ $2 = "libevent" ] || [ $# -lt 2 ]; then
   cd libevent-2.0.22-stable
 
   ./autogen.sh
-  ./configure --host=$TOOL
+  CFLAGS="-fdata-sections -ffunction-sections" ./configure --host=$TOOL
   make clean
   make -j8
 
@@ -115,7 +115,7 @@ if [ $2 = "lua" ] || [ $# -lt 2 ]; then
   cd lua-5.3.2
 
   make clean
-  make generic MYCFLAGS=-DLUA_COMPAT_MODULE CC=$TOOL-gcc RANLIB=$TOOL-ranlib #AR=$TOOL-ar
+  make generic MYCFLAGS="-DLUA_COMPAT_MODULE -fdata-sections -ffunction-sections" CC=$TOOL-gcc RANLIB=$TOOL-ranlib #AR=$TOOL-ar
 
   cp src/liblua.a ../lib-$OUT
   cp src/*.h ../include-$OUT

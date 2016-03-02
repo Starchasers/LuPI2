@@ -437,63 +437,6 @@ static int l_fb_ready (lua_State *L) {
 }
 
 void fb_start(lua_State *L) {
-#ifndef _WIN32
-   fb_file = open("/dev/fb0", O_RDWR);
-   if (fb_file == -1) {
-     printf("Error: cannot open framebuffer device");
-     exit(1);
-     return;
-   }
-
-  if (ioctl(fb_file, FBIOGET_FSCREENINFO, &fb_finfo) == -1) {
-     printf("Error reading fixed information");
-     exit(1);
-     return;
-  }
-
-  if (ioctl(fb_file, FBIOGET_VSCREENINFO, &fb_vinfo) == -1) {
-    printf("Error reading variable information");
-    exit(1);
-    return;
-  }
-
-  fb_vinfo.bits_per_pixel = 16;
-  if (fb_rot == 1 || fb_rot == 3) {
-    fb_cw = fb_vinfo.yres / 8;
-    fb_ch = fb_vinfo.xres / 16;
-  } else {
-    fb_cw = fb_vinfo.xres / 8;
-    fb_ch = fb_vinfo.yres / 16;
-  }
-  if (ioctl(fb_file, FBIOPUT_VSCREENINFO, &fb_vinfo) == -1) {
-    fb_vinfo.bits_per_pixel = 32;
-    if (ioctl(fb_file, FBIOPUT_VSCREENINFO, &fb_vinfo) == -1) {
-      printf("Error setting 32 or 16BPP mode");
-      exit(1);
-      return;
-    }
-  }
-
-  fb_bpp = fb_vinfo.bits_per_pixel;
-  fb_bypp = fb_bpp >> 3;
-  fb_pitch = fb_vinfo.xres_virtual * fb_bypp;
-  fb_xo = fb_vinfo.xoffset;
-  fb_yo = fb_vinfo.yoffset;
-
-  fb_ptr = (char *)mmap(0, fb_vinfo.xres * fb_vinfo.yres * fb_bypp, PROT_READ | PROT_WRITE, MAP_SHARED, fb_file, 0);
-  if ((intptr_t)fb_ptr == -1) {
-    printf("Failed to map framebuffer device to memory");
-    exit(1);
-    return;
-  }
-
-  colbuf = (char *)malloc(2 * fb_cw * fb_ch);
-  chrbuf = (ushort *)malloc(2 * fb_cw * fb_ch);
-
-  fb_ready = 1;
-
-#endif
-
   struct luaL_Reg fblib[] = {
 #ifndef _WIN32
     {"setPalette", l_set_palette},
@@ -512,4 +455,60 @@ void fb_start(lua_State *L) {
   };
 
   luaL_openlib(L, "framebuffer", fblib, 0);
+
+#ifndef _WIN32
+   fb_file = open("/dev/fb0", O_RDWR);
+   if (fb_file == -1) {
+     printf("Error: cannot open framebuffer device");
+     return;
+   }
+
+  if (ioctl(fb_file, FBIOGET_FSCREENINFO, &fb_finfo) == -1) {
+     printf("Error reading fixed information");
+     close(fb_file);
+     return;
+  }
+
+  if (ioctl(fb_file, FBIOGET_VSCREENINFO, &fb_vinfo) == -1) {
+    printf("Error reading variable information");
+    close(fb_file);
+    return;
+  }
+
+  fb_vinfo.bits_per_pixel = 16;
+  if (fb_rot == 1 || fb_rot == 3) {
+    fb_cw = fb_vinfo.yres / 8;
+    fb_ch = fb_vinfo.xres / 16;
+  } else {
+    fb_cw = fb_vinfo.xres / 8;
+    fb_ch = fb_vinfo.yres / 16;
+  }
+  if (ioctl(fb_file, FBIOPUT_VSCREENINFO, &fb_vinfo) == -1) {
+    fb_vinfo.bits_per_pixel = 32;
+    if (ioctl(fb_file, FBIOPUT_VSCREENINFO, &fb_vinfo) == -1) {
+      printf("Error setting 32 or 16BPP mode");
+      close(fb_file);
+      return;
+    }
+  }
+
+  fb_bpp = fb_vinfo.bits_per_pixel;
+  fb_bypp = fb_bpp >> 3;
+  fb_pitch = fb_vinfo.xres_virtual * fb_bypp;
+  fb_xo = fb_vinfo.xoffset;
+  fb_yo = fb_vinfo.yoffset;
+
+  fb_ptr = (char *)mmap(0, fb_vinfo.xres * fb_vinfo.yres * fb_bypp, PROT_READ | PROT_WRITE, MAP_SHARED, fb_file, 0);
+  if ((intptr_t)fb_ptr == -1) {
+    printf("Failed to map framebuffer device to memory");
+    close(fb_file);
+    return;
+  }
+
+  colbuf = (char *)malloc(2 * fb_cw * fb_ch);
+  chrbuf = (ushort *)malloc(2 * fb_cw * fb_ch);
+
+  fb_ready = 1;
+
+#endif
 }

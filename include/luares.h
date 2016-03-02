@@ -16,4 +16,5 @@ extern char lua_textgpu[];
 extern char lua_util_buffer[];
 extern char lua_util_color[];
 extern char lua_util_random[];
+extern char lua_winapigpu[];
 #endif

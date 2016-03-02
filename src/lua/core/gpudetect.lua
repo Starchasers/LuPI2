@@ -19,6 +19,11 @@ local function tryFb()
   return false
 end
 
+local function tryWindows()
+  loadModule("winapigpu")
+  return modules.winapigpu.start() and true or false
+end
+
 function gpudetect.run()
   local s = false
   if hasOpt("-t", "--text") then
@@ -31,6 +36,10 @@ function gpudetect.run()
   if not s then
     lprint("Falling back to text gpu")
     s = tryText()
+  end
+  if not s and winapigpu then
+    lprint("Falling back to windows gpu")
+    s = tryWindows()
   end
 end
 

@@ -22,6 +22,7 @@ void setup_modules(lua_State *L) {
   pushstuple(L, "sandbox",      lua_sandbox);
   pushstuple(L, "textgpu",      lua_textgpu);
   pushstuple(L, "fbgpu",        lua_fbgpu);
+  pushstuple(L, "winapigpu",    lua_winapigpu);
   pushstuple(L, "color",        lua_util_color);
   pushstuple(L, "random",       lua_util_random);
   pushstuple(L, "buffer",       lua_util_buffer);

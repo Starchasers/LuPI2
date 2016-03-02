@@ -8,7 +8,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-//#include <sys/statvfs.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -27,6 +26,9 @@ void run_init(int argc, char **argv) {
   setup_modules   (L);
   luanative_start (L);
   internet_start  (L);
+#ifdef _WIN32
+  winapigpu_init  (L);
+#endif
   fb_start        (L);
   termutils_start (L);
   event_prepare();

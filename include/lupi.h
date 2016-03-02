@@ -30,4 +30,9 @@ void internet_start(lua_State *L);
 void event_prepare();
 int event_pull(int timeout);
 
+#ifdef _WIN32
+void winapigpu_init(lua_State* L);
+int winapigpu_events();
+#endif
+
 #endif

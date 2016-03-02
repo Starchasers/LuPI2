@@ -89,12 +89,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     case WM_CREATE:
       logn("win: Create");
       screenbb = (uchar*) calloc(RES_X * RES_Y, BYPP);
-      //for(int i = 0; i < RES_X * RES_Y * BYPP; i++) screenbb[i] = (uchar) rand();
-      win_draw_32(0, 0, 0, 0xFFFFFF, 'H', 1);
-      win_draw_32(1, 0, 0, 0xFFFFFF, 'e', 1);
-      win_draw_32(2, 0, 0, 0xFFFFFF, 'l', 1);
-      win_draw_32(3, 0, 0, 0xFFFFFF, 'l', 1);
-      win_draw_32(4 , 0, 0, 0xFFFFFF, 'o', 1);
 
       colbuf = (char *)malloc(2 * CHARSW * CHARSH);
       chrbuf = (ushort *)malloc(2 * CHARSW * CHARSH);

@@ -4,7 +4,7 @@
 PREFIX?=x86_64-linux-musl
 
 CC = $(PREFIX)-gcc
-CFLAGS?=-O2 -std=c99 -DLUA_COMPAT_MODULE -fdata-sections -ffunction-sections
+CFLAGS?=-O2 -std=c99 -fdata-sections -ffunction-sections
 LDFLAGS+= -O2 -Wl,--gc-sections -static -Ldependencies/lib-$(PREFIX)
 
 # Project specific stuff

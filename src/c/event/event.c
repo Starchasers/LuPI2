@@ -59,10 +59,6 @@ static void add_events(struct timeval* timeout) {
 
 int event_pull(int _timeout) {
   int n = 0;
-#ifdef _WIN32
-  n = winapigpu_events();
-  if(n > 0) return n;
-#endif
 
   if(_timeout > 0) { /* wait max this much time for event */
     struct timeval timeout = {_timeout / 1000, (_timeout % 1000) * 1000};

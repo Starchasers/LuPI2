@@ -5,6 +5,8 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include <windows.h>
+#include <pthread.h>
+#include <time.h>
 
 #define BYPP 4
 #define RES_X 800
@@ -21,6 +23,7 @@
 
 #define uchar unsigned char
 
+HWND hwnd;
 uchar *screenbb = NULL;
 HBITMAP screenbmap = NULL;
 char *colbuf = 0;
@@ -72,6 +75,7 @@ static inline int win_draw_32(int x, int y, int bg, int fg, int chr, int cwd) {
 
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+  logn("win: Msg");
   switch(msg) {
     case WM_PAINT: {
         logn("win: PAINT");
@@ -107,13 +111,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   return 0;
 }
 
+static int win_draw(int x, int y, int bg, int fg, int chr);
 
-
-
-static int l_open(lua_State *L) {
+void* winapigpu_events(void* ign) {
   logn("win: INIT");
   WNDCLASSEX wc;
-  HWND hwnd;
 
   wc.cbSize        = sizeof(WNDCLASSEX);
   wc.style         = 0;
@@ -129,9 +131,7 @@ static int l_open(lua_State *L) {
   wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
 
   if(!RegisterClassEx(&wc)) {
-    lua_pushboolean(L, 0);
-    lua_pushstring(L, "Window registration failed");
-    return 2;
+    return 0;
   }
 
   hwnd = CreateWindowEx(
@@ -143,9 +143,7 @@ static int l_open(lua_State *L) {
     NULL, NULL, GetModuleHandle(NULL), NULL);
 
   if(hwnd == NULL) {
-    lua_pushboolean(L, 0);
-    lua_pushstring(L, "Window creation failed");
-    return 2;
+    return 0;
   }
 
   ShowWindow(hwnd, SW_SHOW);
@@ -153,6 +151,27 @@ static int l_open(lua_State *L) {
 
   InvalidateRect(hwnd, NULL, TRUE); 
 
+  win_draw(0,0,0,0xFFFFFF,'H');
+
+  MSG Msg;
+  while(GetMessage(&Msg, NULL, 0, 0) > 0) {
+    TranslateMessage(&Msg);
+    DispatchMessage(&Msg);
+  }
+  logn("winapi quit!!");
+  return NULL;
+}
+
+static int l_open(lua_State *L) {
+  pthread_t eventThread;
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize(&attr, 0x800000);
+  pthread_create(&eventThread, &attr, winapigpu_events, NULL);
+  pthread_attr_destroy(&attr);
+
+  struct timespec st = {.tv_sec = 0, .tv_nsec = 1000000};
+  while(!screenbb) nanosleep(&st, NULL);
   lua_pushboolean(L, 1);
   return 1;
 }
@@ -217,7 +236,9 @@ static int l_put (lua_State *L) {
   int bg = lua_tonumber(L, 3);
   int fg = lua_tonumber(L, 4);
   int chr = lua_tonumber(L, 5);
-  return win_draw(x, y, bg, fg, chr);
+  win_draw(x, y, bg, fg, chr);
+  InvalidateRect(hwnd, NULL, FALSE);
+  return 0;
 }
 
 static int l_get_nearest (lua_State *L) {
@@ -276,6 +297,7 @@ static int l_copy (lua_State *L) {
 
   free(tmpcol);
   free(tmpchr);
+  InvalidateRect(hwnd, NULL, FALSE);
 }
 
 static int l_fill (lua_State *L) {
@@ -292,6 +314,7 @@ static int l_fill (lua_State *L) {
       win_draw(j, i, bg, fg, chr);
     }
   }
+  InvalidateRect(hwnd, NULL, FALSE);
   return 0;
 }
 
@@ -309,6 +332,7 @@ static int l_winfill (lua_State *L) {
       win_draw(j, i, bg, fg, chr);
     }
   }
+  InvalidateRect(hwnd, NULL, FALSE);
   return 0;
 }
 
@@ -374,15 +398,6 @@ void winapigpu_init(lua_State* L) {
   };
 
   luaL_openlib(L, "winapigpu", winlib, 0);
-}
-
-int winapigpu_events() {
-  MSG Msg;
-  while(GetMessage(&Msg, NULL, 0, 0) > 0) {
-    TranslateMessage(&Msg);
-    DispatchMessage(&Msg);
-  }
-  return 0;
 }
 
 #endif

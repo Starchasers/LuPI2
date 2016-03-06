@@ -4,8 +4,8 @@
 PREFIX?=x86_64-linux-musl
 
 CC = $(PREFIX)-gcc
-CFLAGS?=-O2 -std=c99 -fdata-sections -ffunction-sections
-LDFLAGS+= -O2 -Wl,--gc-sections -static -Ldependencies/lib-$(PREFIX)
+CFLAGS?=-O2 -std=c99 -fdata-sections -ffunction-sections -pthread
+LDFLAGS+= -O2 -Wl,--gc-sections -static -Ldependencies/lib-$(PREFIX) -pthread
 
 # Project specific stuff
 BUILD = bin/

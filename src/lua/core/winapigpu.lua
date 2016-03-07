@@ -22,7 +22,10 @@ end
 local background = 0
 local foreground = 0
 
+local usub
+
 function wingpu.start()
+  usub = modules.sandbox.unicode.sub
   local gpu = {}
 
   function gpu.bind() return false, "This is static bound gpu" end
@@ -135,7 +138,7 @@ function wingpu.start()
     checkArg(3, w, "number")
     checkArg(4, h, "number")
     checkArg(5, ch, "string")
-    ch = ch:sub(1, 1)
+    ch = usub(ch, 1, 1)
     win.fill(x-1, y-1, x+w-2, y+h-2, background, foreground, utf8.codepoint(ch))
     return true
   end

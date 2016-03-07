@@ -147,7 +147,7 @@ function fbgpu.start()
     checkArg(3, w, "number")
     checkArg(4, h, "number")
     checkArg(5, ch, "string")
-    ch = ch:sub(1, 1)
+    ch = usub(ch, 1, 1)
     fb.fill(x-1, y-1, x+w-2, y+h-2, background, foreground, utf8.codepoint(ch))
     return true
   end

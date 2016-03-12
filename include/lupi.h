@@ -8,10 +8,12 @@
 void logn(const char *message);
 void logi(int message);
 void logm(const char *message);
+void logt(const char *message);
 #else
   #define logn(m)
   #define logi(m)
   #define logm(m)
+  #define logt(m)
 #endif
 
 #define pushstuple(state, name, value) lua_pushstring((state), (name)); lua_pushstring((state), (value)); lua_settable((state), -3)

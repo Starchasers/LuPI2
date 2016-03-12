@@ -46,6 +46,9 @@ function boot.boot()
     bsod(reason)
   else
     local crash = false
+    if native.debug then
+      native.sleep(500000)
+    end
     xpcall(f, function(e)
       local trace = {}
 

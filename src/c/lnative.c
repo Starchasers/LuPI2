@@ -25,6 +25,8 @@
 
 #define KIOCSOUND 0x4B2F  /* start sound generation (0 for off) */
 
+long logStart = -1;
+
 /* Enable in lupi.h */
 #ifdef LOGGING
 void logn(const char *message) {
@@ -69,6 +71,17 @@ void logm(const char *message) {
   }
 }
 
+void logt(const char *message) {
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  logm("[");
+  logi(tp.tv_sec - logStart);
+  logm("+");
+  logi(tp.tv_usec);
+  logm("]");
+  logm(message);
+}
+
 static int l_log (lua_State *L) {
   const char* t = lua_tostring(L, 1);
   logn(t);
@@ -79,6 +92,7 @@ static int l_log (lua_State *L) {
 #define logn(m)
 #define logi(m)
 #define logm(m)
+#define logt(m)
 static int l_log (lua_State *L) {
   return 0;
 }
@@ -86,7 +100,8 @@ static int l_log (lua_State *L) {
 
 static int l_sleep (lua_State *L) {
   unsigned int t = lua_tonumber(L, 1);
-  usleep(t);
+  struct timespec st = {.tv_sec = t / 1000000, .tv_nsec = (t % 1000000) * 1000};
+  nanosleep(&st, NULL);
   return 0;
 }
 
@@ -449,6 +464,10 @@ static int l_debug (lua_State *L) {
 #endif
 
 void luanative_start(lua_State *L) {
+
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  logStart = tp.tv_sec;
 
   struct luaL_Reg nativelib[] = {
     {"sleep", l_sleep},

@@ -101,14 +101,14 @@ function computer.signalTransformers.key_down(s, a, ascii, key, user)
   if key ~= -1 then
     return s, a, ascii, key, user
   end
-  return s, a, asciitr[ascii] or ascii, keymap[ascii] or key, user
+  return s, a, math.floor(asciitr[ascii] or ascii), keymap[ascii] or key, user
 end
 
 function computer.signalTransformers.key_up(s, a, ascii, key, user)
   if key ~= -1 then
     return s, a, ascii, key, user
   end
-  return s, a, asciitr[ascii] or ascii, keymap[ascii] or key, user
+  return s, a, math.floor(asciitr[ascii] or ascii), keymap[ascii] or key, user
 end
 
 -----

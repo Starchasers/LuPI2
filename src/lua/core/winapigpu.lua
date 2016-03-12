@@ -109,13 +109,13 @@ function wingpu.start()
     y = math.floor(y)
     if not vertical then
       local i = 0
-      value:gsub(".", function(c)
+      value:gsub("([%z\1-\127\194-\244][\128-\191]*)", function(c)
         win.put(x+i-1, y-1, background, foreground, utf8.codepoint(c))
         i = i+1
       end)
     else
       local i = 0
-      value:gsub(".", function(c)
+      value:gsub("([%z\1-\127\194-\244][\128-\191]*)", function(c)
         win.put(x-1, y+i-1, background, foreground, utf8.codepoint(c))
         i = i+1
       end)
@@ -147,6 +147,11 @@ function wingpu.start()
   gpu.setForeground(0xFFFFFF)
   gpu.setBackground(0x000000)
 
+  local screenAddr
+
+  function gpu.getScreen()
+    return screenAddr
+  end
 
   local s, reason = win.open()
   if not s then
@@ -154,7 +159,7 @@ function wingpu.start()
   end
 
   modules.component.api.register(nil, "gpu", gpu)
-  modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
+  screenAddr = modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
   modules.component.api.register("TODO:SetThisUuid", "keyboard", {})
 
   return s

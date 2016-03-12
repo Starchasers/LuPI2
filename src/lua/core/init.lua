@@ -107,7 +107,13 @@ function main()
   if native.debug and native.platform():match("unix") then
     modules.filesystem.register("/", "11111111-1111-1111-1111-111111111111")
   end
-  modules.computer.tmp = modules.filesystem.register("/tmp/lupi-" .. modules.random.uuid())
+  if native.platform():match("unix") then
+    modules.computer.tmp = modules.filesystem.register("/tmp/lupi-" .. modules.random.uuid())
+  else
+    native.fs_mkdir("tmp")
+    modules.computer.tmp = modules.filesystem.register("tmp/lupi-" .. modules.random.uuid())
+    --TODO: cleaning hook or something
+  end
 
   modules.gpudetect.run()
 

@@ -117,13 +117,13 @@ function fbgpu.start()
     y = math.floor(y)
     if not vertical then
       local i = 0
-      value:gsub(".", function(c)
+      value:gsub("([%z\1-\127\194-\244][\128-\191]*)", function(c)
         fb.put(x+i-1, y-1, background, foreground, utf8.codepoint(c))
         i = i+1
       end)
     else
       local i = 0
-      value:gsub(".", function(c)
+      value:gsub("([%z\1-\127\194-\244][\128-\191]*)", function(c)
         fb.put(x-1, y+i-1, background, foreground, utf8.codepoint(c))
         i = i+1
       end)
@@ -156,11 +156,17 @@ function fbgpu.start()
   gpu.setForeground(0xFFFFFF)
   gpu.setBackground(0x000000)
 
+  local screenAddr
+
+  function gpu.getScreen()
+    return screenAddr
+  end
+
   termutils.init()
   write("\x1b[?25l") --Disable cursor
 
   modules.component.api.register(nil, "gpu", gpu)
-  modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
+  screenAddr = modules.component.api.register(nil, "screen", {getKeyboards = function() return {"TODO:SetThisUuid"} end}) --verry dummy screen, TODO: make it better, kbd uuid also in epoll.c
   modules.component.api.register("TODO:SetThisUuid", "keyboard", {})
 
   deadhooks[#deadhooks + 1] = function()

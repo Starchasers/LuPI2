@@ -72,13 +72,11 @@ static inline int win_draw_32(int x, int y, int bg, int fg, int chr, int cwd) {
   }
 }
 
-
+void pokeWinEvt(char ch);
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-  logn("win: Msg");
   switch(msg) {
     case WM_PAINT: {
-        logn("win: PAINT");
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
         screenbmap = CreateBitmap(RES_X, RES_Y, 1, BYPP * 8, (void*) screenbb);
@@ -90,12 +88,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         EndPaint(hwnd, &ps);
       }
       break;
+    case WM_CHAR:
+    //case WM_UNICHAR:
+    //case WM_KEYUP:
+    //case WM_KEYDOWN:
+      pokeWinEvt(wParam);
+      break;
     case WM_CREATE:
       logn("win: Create");
       screenbb = (uchar*) calloc(RES_X * RES_Y, BYPP);
 
-      colbuf = (char *)malloc(2 * CHARSW * CHARSH);
-      chrbuf = (ushort *)malloc(2 * CHARSW * CHARSH);
+      colbuf = (char*) malloc(2 * CHARSW * CHARSH);
+      chrbuf = (ushort*) malloc(2 * CHARSW * CHARSH);
 
       break;
     case WM_CLOSE:

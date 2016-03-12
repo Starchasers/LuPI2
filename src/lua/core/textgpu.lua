@@ -143,7 +143,7 @@ function textgpu.start()
     else
       --TODO: Buffers!
       write("\x1b[" .. y .. ";" .. x .. "H")
-      value:gsub(".", function(c)
+      value:gsub("([%z\1-\127\194-\244][\128-\191]*)", function(c)
         write(c .. "\x1b[D\x1b[B")
       end)
     end

@@ -106,7 +106,7 @@ function fbgpu.start()
   function gpu.get(x, y)
     checkArg(1, x, "number")
     checkArg(2, y, "number")
-    return utf8.char(fb.get(x-1, y-1))
+    return utf8.char(fb.get(x-1, y-1)), mapping[fb.getfg(x-1, y-1)], mapping[fb.getbg(x-1, y-1)]
   end
   function gpu.set(x, y, value, vertical)
     checkArg(1, x, "number")

@@ -35,6 +35,8 @@ OUTNAME = lupi
 debug: CFLAGS+= -g -DLOGGING -DDEBUG
 debug: build
 
+####
+
 winexe: $(BUILD)$(OUTNAME)
 	cp $(BUILD)$(OUTNAME) $(BUILD)$(OUTNAME).exe
 
@@ -47,6 +49,55 @@ win-build: build winexe
 
 win-debug: LIBS+= -lws2_32 -lgdi32
 win-debug: debug winexe
+
+####
+
+dependencies/v86:
+	cd dependencies; git clone https://github.com/magik6k/v86.git
+
+dependencies/v86/build/libv86.js: dependencies/v86
+	cd dependencies/v86 && wget -P closure-compiler http://dl.google.com/closure-compiler/compiler-latest.zip
+	cd dependencies/v86 && unzip -d closure-compiler closure-compiler/compiler-latest.zip compiler.jar
+	cd dependencies/v86 && make build/libv86.js
+
+$(BUILD)web: dependencies/v86/build/libv86.js
+	rm -rf bin/web; mkdir -p bin/web
+
+web: iso bin/web
+
+
+####
+ISOKERNEL=linux-4.5.2
+
+dependencies/$(ISOKERNEL).tar.xz:
+	cd dependencies && wget https://cdn.kernel.org/pub/linux/kernel/v4.x/$(ISOKERNEL).tar.xz
+
+dependencies/$(ISOKERNEL)/arch/x86/boot/bzImage: $(BUILD)lupi.cpio dependencies/$(ISOKERNEL).tar.xz
+	rm -rf dependencies/$(ISOKERNEL)/
+	cd dependencies && tar xf $(ISOKERNEL).tar.xz
+	cp src/iso/linux.config dependencies/$(ISOKERNEL)/.config
+	cd dependencies/$(ISOKERNEL)/ && make -j8
+
+$(BUILD)lupi.cpio: $(BUILDDIRECTORIES) $(BUILD)$(OUTNAME) build
+	rm -rf $(BUILD)iso.init; mkdir -p $(BUILD)iso.init
+	mkdir -p bin/iso.init/sbin bin/iso.init/proc bin/iso.init/sys bin/iso.init/dev bin/iso.init/tmp
+	cp bin/lupi bin/iso.init/sbin/init
+	(cd bin/iso.init; find . | fakeroot cpio -o -H newc) > $@
+
+$(BUILD)lupi.iso:  dependencies/$(ISOKERNEL)/arch/x86/boot/bzImage
+	rm -rf bin/iso.dir; mkdir -p bin/iso.dir bin/iso.dir/boot
+	cp $(BUILD)lupi.cpio bin/iso.dir/boot/lupi.img
+	cp dependencies/$(ISOKERNEL)/arch/x86/boot/bzImage bin/iso.dir/boot/vmlinuz
+	cp src/iso/isolinux.cfg bin/iso.dir/isolinux.cfg
+	mkdir -p bin/iso.dir/syslinux bin/iso.dir/sbin
+	cp bin/lupi bin/iso.dir/sbin/init
+	cp /usr/lib/syslinux/bios/{isolinux.bin,ldlinux.c32,isohdpfx.bin} bin/iso.dir/syslinux/
+	mkisofs -o bin/lupi.iso -b syslinux/isolinux.bin -c syslinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table bin/iso.dir
+
+iso: PREFIX?=i486-linux-musl
+iso: build $(BUILD)lupi.iso
+
+####
 
 $(BUILDDIRECTORIES):
 	mkdir -p $@
@@ -81,4 +132,4 @@ smallclean:
 
 # Other
 
-.PHONY: debug clean cleanresourcues resources build smallclean all
+.PHONY: web iso debug clean cleanresourcues resources build smallclean all

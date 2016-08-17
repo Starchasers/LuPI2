@@ -34,6 +34,11 @@ int event_pull(int timeout);
 
 #ifdef _WIN32
 void winapigpu_init(lua_State* L);
+#define WIN32
+#include <event2/event.h>
+#include <event2/event_struct.h>
+void handleWinevent(evutil_socket_t fd, short what, void *eventc);
+#undef WIN32
 #endif
 
 #endif

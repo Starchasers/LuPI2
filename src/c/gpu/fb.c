@@ -448,6 +448,8 @@ void fb_start(lua_State *L) {
     {"getBackground", l_fb_getbg},
     {"getForeground", l_fb_getfg},
     {"get", l_fb_get},
+    {"getfg", l_fb_getfg},
+    {"getbg", l_fb_getbg},
     {"getNearest", l_get_nearest},
 #endif
     {"isReady", l_fb_ready},
@@ -475,7 +477,7 @@ void fb_start(lua_State *L) {
     return;
   }
 
-  fb_vinfo.bits_per_pixel = 16;
+  fb_vinfo.bits_per_pixel = 32;
   if (fb_rot == 1 || fb_rot == 3) {
     fb_cw = fb_vinfo.yres / 8;
     fb_ch = fb_vinfo.xres / 16;

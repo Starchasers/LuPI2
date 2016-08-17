@@ -89,11 +89,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
       }
       break;
     case WM_CHAR:
-    //case WM_UNICHAR:
+    case WM_UNICHAR:
     //case WM_KEYUP:
-    //case WM_KEYDOWN:
+    case WM_KEYDOWN: {
+      logi(wParam);
+      logn("");
       pokeWinEvt(wParam);
       break;
+    }
     case WM_CREATE:
       logn("win: Create");
       screenbb = (uchar*) calloc(RES_X * RES_Y, BYPP);
@@ -159,7 +162,7 @@ void* winapigpu_events(void* ign) {
 
   MSG Msg;
   while(GetMessage(&Msg, NULL, 0, 0) > 0) {
-    TranslateMessage(&Msg);
+    //TranslateMessage(&Msg);
     DispatchMessage(&Msg);
   }
   logn("winapi quit!!");

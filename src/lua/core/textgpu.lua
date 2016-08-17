@@ -121,8 +121,8 @@ function textgpu.start()
   function gpu.get(x, y)
     checkArg(1, x, "number")
     checkArg(2, y, "number")
-    --FIXME: ASAP: Implement
-    return " "
+    
+    return tbuffer[y]:sub(x,x), mapping[fbuffer[y]:sub(x,x)], mapping[bbuffer[y]:sub(x,x)]
   end
   function gpu.set(x, y, value, vertical)
     checkArg(1, x, "number")

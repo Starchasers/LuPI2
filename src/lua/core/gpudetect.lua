@@ -1,6 +1,7 @@
 local gpudetect = {}
 
 local function tryText()
+  lprint("Trying text-mode gpu")
   loadModule("textgpu")
   local textgpuAddr, tgfail = modules.textgpu.start()
   if not textgpuAddr then
@@ -11,6 +12,7 @@ local function tryText()
 end
 
 local function tryFb()
+  lprint("Trying framebuffer-mode gpu")
   if framebuffer.isReady() then
     loadModule("fbgpu")
     modules.fbgpu.start()
